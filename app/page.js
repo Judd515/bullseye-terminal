@@ -62,10 +62,28 @@ export default function Dashboard() {
             // In a real app, this would come from the backend/sentinel_dashboard.py state
             const volLiqRatio = s.price > 0 ? (s.price * 1000) / (s.price * 50000) : 0; // Mocked ratio for UI logic
             
+            const liq = 1000000000; // Mocked for UI, in prod this scales with s.price
+            const vol = s.price > 0 ? (s.price * 50000000) / 2642 : 0; // Simulated volume sync with ETH price
+            
             const council = [
-                { name: "The Bear", color: "text-rose-400", vote: s.change > 15 ? "REJECT" : s.change > 10 ? "NEUTRAL" : "ACCEPT", logic: s.change > 15 ? "Overextended. Bull trap imminent." : "Risk parameters within 1SD." },
-                { name: "The Mooner", color: "text-blue-400", vote: s.change > 5 ? "BUY" : "HOLD", logic: s.change > 5 ? "Velocity confirms breakout. Moon mission active." : "Sideways volume. Boring." },
-                { name: "The Quant", color: "text-emerald-400", vote: s.change > 3 ? "BUY" : s.change < -5 ? "SELL" : "HOLD", logic: s.change > 3 ? "Statistical alpha > 2.0. Trend confirmed." : "No significant drift detected." }
+                { 
+                    name: "The Bear", 
+                    color: "text-rose-400", 
+                    vote: s.change > 15 ? "REJECT" : s.change > 10 ? "NEUTRAL" : "ACCEPT", 
+                    logic: s.change > 15 ? "Overextended. Bull trap imminent." : "Risk parameters within 1S.D." 
+                },
+                { 
+                    name: "The Mooner", 
+                    color: "text-blue-400", 
+                    vote: (s.change > 5 && (vol > liq * 0.1)) || s.change > 10 ? "BUY" : "NEUTRAL", 
+                    logic: s.change > 5 ? "Velocity confirms breakout. Moon mission active." : "Sideways volume. Boring." 
+                },
+                { 
+                    name: "The Quant", 
+                    color: "text-emerald-400", 
+                    vote: s.change > 3 ? "BUY" : s.change < -5 ? "SELL" : "HOLD", 
+                    logic: s.change > 3 ? "Statistical alpha > 2.0. Trend confirmed." : "No significant drift detected." 
+                }
             ];
 
             return {
