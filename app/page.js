@@ -56,10 +56,24 @@ export default function Dashboard() {
             return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Opportunity cost suggests maintaining wait-and-see posture." };
         };
 
-        const enhancedStats = resultStats.map(s => ({
-            ...s,
-            consensus: getConsensus(s)
-        }));
+        const enhancedStats = resultStats.map(s => {
+            const consensus = getConsensus(s);
+            // Simulate Council Debate for UI UI
+            // In a real app, this would come from the backend/sentinel_dashboard.py state
+            const volLiqRatio = s.price > 0 ? (s.price * 1000) / (s.price * 50000) : 0; // Mocked ratio for UI logic
+            
+            const council = [
+                { name: "The Bear", color: "text-rose-400", vote: s.change > 15 ? "REJECT" : s.change > 10 ? "NEUTRAL" : "ACCEPT", logic: s.change > 15 ? "Overextended. Bull trap imminent." : "Risk parameters within 1SD." },
+                { name: "The Mooner", color: "text-blue-400", vote: s.change > 5 ? "BUY" : "HOLD", logic: s.change > 5 ? "Velocity confirms breakout. Moon mission active." : "Sideways volume. Boring." },
+                { name: "The Quant", color: "text-emerald-400", vote: s.change > 3 ? "BUY" : s.change < -5 ? "SELL" : "HOLD", logic: s.change > 3 ? "Statistical alpha > 2.0. Trend confirmed." : "No significant drift detected." }
+            ];
+
+            return {
+                ...s,
+                consensus,
+                council
+            };
+        });
 
         setData({ 
           total: 5000.00, 
@@ -67,7 +81,7 @@ export default function Dashboard() {
           balance_usd: 5000.00,
           holdings: [],
           history: [],
-          logic: "Council session active. Current liquidity levels balanced. Observing volatility maps.",
+          logic: "Council session active. Predator v2.0 heuristics scanning liquidity maps.",
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -282,19 +296,31 @@ export default function Dashboard() {
                                 </div>
                                 <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">{selectedToken.consensus.desc}</p>
                                 
-                                <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-                                    <div className="flex gap-3">
-                                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                                        <div className="space-y-1">
-                                            <div className="text-[9px] font-black text-white uppercase tracking-wider">RSI Analysis</div>
-                                            <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Measures oversold (below 30) or overbought (above 70) momentum.</p>
-                                        </div>
+                                <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
+                                    <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] italic mb-4">Council_Split_Decision</div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {selectedToken.council && selectedToken.council.map((member) => (
+                                            <div key={member.name} className="bg-white/[0.02] border border-white/5 p-3 rounded-2xl text-center">
+                                                <div className={`text-[8px] font-black uppercase mb-1 ${member.color}`}>{member.name}</div>
+                                                <div className={`text-[10px] font-black italic ${member.vote === 'BUY' ? 'text-emerald-400' : member.vote === 'REJECT' || member.vote === 'SELL' ? 'text-rose-500' : 'text-zinc-500'}`}>{member.vote}</div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex gap-3">
-                                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                                        <div className="space-y-1">
-                                            <div className="text-[9px] font-black text-white uppercase tracking-wider">Trend MA</div>
-                                            <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Simple moving average. Price above indicates a bullish regime.</p>
+                                    
+                                    <div className="space-y-4 pt-4 border-t border-white/5">
+                                        <div className="flex gap-3">
+                                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                                            <div className="space-y-1">
+                                                <div className="text-[9px] font-black text-white uppercase tracking-wider">RSI Analysis</div>
+                                                <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Measures oversold (below 30) or overbought (above 70) momentum.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                                            <div className="space-y-1">
+                                                <div className="text-[9px] font-black text-white uppercase tracking-wider">Trend MA</div>
+                                                <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Simple moving average. Price above indicates a bullish regime.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
