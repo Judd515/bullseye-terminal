@@ -61,14 +61,6 @@ export default function Dashboard() {
             consensus: getConsensus(s)
         }));
 
-        // Set the strongest indicator (max change) as the default selected token
-        if (!selectedToken) {
-          const strongestToken = enhancedStats.reduce((max, token) => 
-              Math.abs(token.change) > Math.abs(max.change) ? token : max
-          , enhancedStats[0]);
-          setSelectedToken(strongestToken);
-        }
-
         setData({ 
           total: 5000.00, 
           pnl: 0.00, 
@@ -107,7 +99,11 @@ export default function Dashboard() {
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
+                "container_id": "tradingview_chart",
+                "studies": [
+                  "RSI@tv-basicstudies",
+                  "MASimple@tv-basicstudies"
+                ]
               });
             }
           };
