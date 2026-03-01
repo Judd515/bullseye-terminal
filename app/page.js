@@ -63,14 +63,10 @@ export default function Dashboard() {
 
         setData({ 
           total: 5003.45, 
-          pnl: 0.07, 
-          balance_usd: 5000.00,
-          holdings: [
-            { id: 'CLANKER', qty: "8.2", value: "3.45", pnl: "+1.2%" }
-          ],
-          history: [
-            { id: 'CLANKER', price: 0.4206, side: 'BUY', ts: '20:15:00', usd: 3.45 }
-          ],
+          pnl: 0.00, 
+          balance_usd: 5003.45,
+          holdings: [],
+          history: [],
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
