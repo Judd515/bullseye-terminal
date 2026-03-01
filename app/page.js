@@ -47,7 +47,7 @@ export default function Dashboard() {
             } catch { return { ...t, price: 0, change: 0, signal: 'NEUTRAL' } ; }
         };
 
-        const stats = await Promise.all(tokens.map(t => fetchToken(t)));
+        const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
         setData({ 
           total: 5003.45, 
           pnl: 0.07, 
@@ -55,7 +55,7 @@ export default function Dashboard() {
           holdings: [
             { id: 'CLANKER', qty: "8.2", value: "3.45", pnl: "+1.2%" }
           ],
-          stats 
+          stats: resultStats
         });
       } catch (e) { console.error(e); }
     };
@@ -64,7 +64,15 @@ export default function Dashboard() {
     return () => clearInterval(i);
   }, []);
 
-  if (!data) return <div className="bg-[#020203] min-h-screen flex items-center justify-center text-blue-500 font-bold uppercase tracking-widest animate-pulse italic">Neural_Syncing_v10.3…</div>;
+  if (!data) return (
+    <div className="min-h-screen bg-[#020203] flex flex-col items-center justify-center space-y-6">
+      <div className="relative">
+        <div className="w-16 h-16 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+        <Target className="w-6 h-6 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+      </div>
+      <div className="text-blue-500 font-bold tracking-widest text-[10px] uppercase animate-pulse italic">Connecting_v10.4…</div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#020203] text-[#f4f4f5] font-sans selection:bg-blue-500/30 overflow-x-hidden relative p-4 md:p-12">
@@ -73,23 +81,22 @@ export default function Dashboard() {
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
         
-        {/* HEADER */}
         <header className="glass rounded-[2.5rem] p-8 md:p-10 bg-white/[0.01] border-white/[0.08] backdrop-blur-2xl flex flex-col md:flex-row justify-between items-start md:items-end gap-6 shadow-2xl">
           <div className="space-y-4 text-left">
             <div className="flex items-center gap-4">
                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(59,130,246,0.4)]">
                  <Target className="w-7 h-7 text-white" />
                </div>
-               <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>BULLSEYE 10.3</h1>
+               <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ fontFamily: 'sans-serif' }}>BULLSEYE 10.4</h1>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase italic leading-none">Neural_Ops_Active</span>
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
+              <span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase italic leading-none">Strategic_Sentinel_v10</span>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-widest mb-1 opacity-60">Vault_Port_Value</div>
-            <div className="text-5xl font-black text-white tracking-tighter tabular-nums" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+            <div className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-widest mb-1 opacity-60">Portfolio_Sync</div>
+            <div className="text-5xl font-black text-white tracking-tighter tabular-nums">
               ${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}
             </div>
             <div className="mt-4 flex items-center justify-end gap-2 text-emerald-400">
@@ -101,38 +108,29 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                {/* ADVISORY */}
-                <div className="glass rounded-[2.5rem] p-8 neo-gradient border-blue-500/20 flex flex-col justify-between group overflow-hidden relative min-h-[260px]">
-                    <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 blur-[60px] rounded-full"></div>
-                    <div className="relative z-10 flex flex-col h-full justify-between">
+                <div className="glass rounded-[2.5rem] p-8 bg-blue-500/5 border-blue-500/20 flex flex-col justify-between group overflow-hidden relative min-h-[260px]">
+                    <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <BrainCircuit className="w-5 h-5 text-blue-400" />
-                            <h2 className="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Decision Node</h2>
+                            <h2 className="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase italic border-b border-blue-500/20 pb-1.5">Decision Node</h2>
                         </div>
-                        <p className="text-xl text-white font-bold leading-snug italic tracking-tight my-6">
-                            “Sentinel v10.3 active. Monitoring liquidity shifts on Base. Probability of breakout remains elevated.”
+                        <p className="text-xl text-white font-bold leading-snug italic tracking-tight m-0">
+                            “Sentinel v10.4 active. Horizontal liquidity compression identified. Probability of breakout move remains high.”
                         </p>
-                        <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                            <span className="text-[9px] font-extrabold text-zinc-500 uppercase tracking-widest">Confidence</span>
-                            <span className="text-xs font-black text-blue-400 italic">81%_MODEL</span>
-                        </div>
                     </div>
                 </div>
 
-                {/* PAPER HOLDINGS */}
                 <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02]">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3 text-emerald-400">
-                            <ShieldCheck className="w-5 h-5" />
-                            <h2 className="text-[10px] font-black tracking-[0.2em] uppercase italic underline underline-offset-8 text-wrap-balance">Paper Positions</h2>
-                        </div>
+                    <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                        <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic">Paper Holdings</h2>
+                        <div className="text-[10px] font-black text-zinc-600">USD: ${data.balance_usd.toLocaleString()}</div>
                     </div>
                     <div className="space-y-3">
                         {data.holdings && data.holdings.length > 0 ? data.holdings.map(h => (
                             <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                                    <span className="font-extrabold text-sm text-zinc-100 uppercase">{h.id}</span>
+                                <div className="flex items-center gap-3 text-zinc-100">
+                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_#10b981]"></div>
+                                    <span className="font-extrabold text-sm uppercase">{h.id}</span>
                                     <span className="text-[9px] text-zinc-600 font-bold uppercase">{h.qty}&nbsp;qty</span>
                                 </div>
                                 <div className="text-right">
@@ -141,17 +139,16 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         )) : (
-                            <div className="text-center py-4 text-[10px] font-bold text-zinc-700 uppercase tracking-widest">Neutral Position // USD Only</div>
+                            <div className="text-center py-4 text-[10px] font-bold text-zinc-700 uppercase tracking-widest">Liquid Position Only</div>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* LIVE SURVEILLANCE */}
             <div className="lg:col-span-3 glass rounded-[2.5rem] p-8 space-y-6 relative overflow-hidden bg-white/[0.01]">
-                <div className="flex items-center justify-between px-2">
+                <div className="flex items-center justify-between px-2 mb-4">
                     <div className="flex items-center gap-3 text-rose-500 animate-pulse uppercase italic font-black text-[10px] tracking-widest">
-                        <Radio className="w-4 h-4" /> Market_Stream
+                        <Radio className="w-4 h-4" /> Market_Surveillance
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -179,19 +176,24 @@ export default function Dashboard() {
             </div>
         </div>
 
-        {/* FOOTER */}
-        <footer className="pt-12 pb-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-30">
-            <div className="text-[9px] font-black tracking-[0.4em] text-zinc-700 uppercase italic">Strategic Ops • v10.3.1_DEV</div>
-            <div className="flex gap-8 italic uppercase font-black text-[9px] text-zinc-500">
-               <div className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Edge_Mesh</div>
-               <div className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5" /> Core_Secured</div>
+        <div className="glass rounded-[2.5rem] p-8 border border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 group hover:border-blue-500/20 transition-all cursor-default">
+            <div className="space-y-4">
+               <div className="flex items-center gap-3 opacity-50">
+                  <Cpu className="w-4 h-4 text-zinc-500" />
+                  <h3 className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase italic">TrashPanda_Logic_Engine</h3>
+               </div>
+               <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0 line-clamp-1 truncate max-w-2xl text-left">
+                  Consensus scoring 4.8/10. 29 indicators active across 8 assets. Neural trace established.
+               </p>
             </div>
-        </footer>
+            <div className="px-6 py-4 bg-black/40 rounded-3xl border border-white/5 text-center min-w-[140px] shadow-inner">
+               <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">SENTINEL_OK</div>
+            </div>
+        </div>
 
-        {/* MODAL SYSTEM */}
         {selectedToken && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 backdrop-blur-xl bg-black/60 items-center overflow-y-auto">
-                <div className="bg-[#18181b] border border-white/10 rounded-[3rem] w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 backdrop-blur-xl bg-black/60 overflow-y-auto">
+                <div className="bg-[#18181b] border border-white/10 rounded-[3rem] w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
                     <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
@@ -199,7 +201,7 @@ export default function Dashboard() {
                             </div>
                             <div>
                                 <h2 className="text-3xl font-black italic tracking-tighter uppercase m-0 leading-none">{selectedToken.id}</h2>
-                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2">Intelligence_Node_Trace</div>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2 border border-white/10 px-2 py-1 rounded inline-block">Neural Node Trace</div>
                             </div>
                         </div>
                         <button onClick={() => setSelectedToken(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
@@ -208,10 +210,10 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="bg-black/40 border border-white/5 rounded-[2rem] aspect-video relative overflow-hidden flex flex-col items-center justify-center">
-                                <BarChart3 className="w-16 h-16 text-zinc-800 animate-pulse" />
-                                <div className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em] mt-4">Streaming Visual Matrix...</div>
+                        <div className="lg:col-span-2 space-y-6 text-left">
+                            <div className="bg-black/40 border border-white/5 rounded-[2rem] aspect-video flex flex-col items-center justify-center">
+                                <BarChart3 className="w-16 h-16 text-zinc-800 animate-pulse mb-4 text-center" />
+                                <div className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">Neural Visualized Matrix...</div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
@@ -224,24 +226,27 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/10 flex flex-col justify-between">
-                            <div className="space-y-6">
-                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic">Neural Consensus</div>
-                                <div className="text-4xl font-black italic text-zinc-100 tracking-tighter uppercase whitespace-pre">{selectedToken.change > 5 ? 'ACCUMULATE' : 'MONITOR'}</div>
-                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic">Technical indicators are currently aligning for a potential breakout test. Priority re-valuation active.</p>
+                        <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/10 flex flex-col h-full">
+                            <div className="flex-1 text-left">
+                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic mb-6 leading-none">Neural Consensus</div>
+                                <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-600'}`}>
+                                    {selectedToken.change > 5 ? 'ACCUMULATE' : 'MONITOR'}
+                                </div>
+                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">Consensus suggests current consolidation is testing local support. Technical indicators are aligning for break test.</p>
                             </div>
-                            <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase self-end">View Raw Stream</a>
+                            <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">Raw Stream</a>
                         </div>
                     </div>
                 </div>
             </div>
         )}
 
-      <style jsx global>{`
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5); }
-        .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.07) 0%, rgba(147, 51, 234, 0.03) 100%); }
-        .glow-blue { filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5)); }
-      `}</style>
+        <style jsx global>{`
+          .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5); }
+          .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.07) 0%, rgba(147, 51, 234, 0.03) 100%); }
+          .glow-blue { filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5)); }
+        `}</style>
+      </div>
     </div>
   );
 }
