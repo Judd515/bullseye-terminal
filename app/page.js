@@ -25,7 +25,7 @@ export default function Dashboard() {
           history: [
              { id: 'BTC', price: 71120.00, side: 'BUY', ts: '23:05:00', usd: 3500.00 }
           ],
-          sync_check: "V3.2_Active"
+          sync_check: "V3.3_FINAL_SYNC"
         };
 
         const tokens = [
@@ -244,7 +244,10 @@ export default function Dashboard() {
 
                 <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02] cursor-pointer hover:bg-emerald-500/[0.04] transition-all" onClick={() => setShowHistory(true)}>
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                        <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
+                        <div className="flex flex-col">
+                            <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
+                            <span className="text-[7px] text-zinc-500 mt-2">v3.3_SYNC</span>
+                        </div>
                         <div className="text-[10px] font-black text-zinc-600 tabular-nums">CASH: ${data.balance_usd.toLocaleString()}</div>
                     </div>
                     <div className="space-y-3">
