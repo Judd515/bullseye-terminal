@@ -67,6 +67,7 @@ export default function Dashboard() {
           balance_usd: 5000.00,
           holdings: [],
           history: [],
+          logic: "Council session active. Current liquidity levels balanced. Observing volatility maps.",
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -229,11 +230,11 @@ export default function Dashboard() {
         <div className="glass rounded-[2.5rem] p-8 border border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 group hover:border-blue-500/20 transition-all cursor-default">
             <div className="space-y-4 text-left">
                <div className="flex items-center gap-3 opacity-50">
-                  <Cpu className="w-4 h-4 text-zinc-500" />
-                  <h3 className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase italic">TrashPanda_Logic_Engine</h3>
+                  <Cpu className="w-4 h-4 text-blue-500" />
+                  <h3 className="text-[9px] font-black text-blue-500 tracking-[0.3em] uppercase italic underline decoration-blue-500/30 underline-offset-4">Predator_Logic_v2.0_Council</h3>
                </div>
                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0 line-clamp-1 truncate max-w-2xl">
-                  Automated background sync established. Neural tracking enabled for high-cap and meme pivot assets.
+                  {data.logic}
                </p>
             </div>
             <div className="px-6 py-4 bg-black/40 rounded-3xl border border-white/5 text-center min-w-[140px] shadow-inner font-bold text-emerald-400 text-[10px] tracking-widest uppercase italic">SENTINEL_SYNCED</div>
