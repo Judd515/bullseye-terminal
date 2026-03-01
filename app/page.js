@@ -296,13 +296,48 @@ export default function Dashboard() {
                                Initializing_Neural_Feed...
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
+                                        <Zap className="w-3 h-3 text-blue-400" />
+                                    </div>
                                     <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Asset Quote</div>
                                     <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
+                                    {/* New: Micro-trend sparkline simulation */}
+                                    <div className="mt-3 flex items-end gap-1 h-4">
+                                        {[40, 60, 45, 70, 55, 80, 65].map((h, i) => (
+                                            <div key={i} className="flex-1 bg-blue-500/20 rounded-t-[1px]" style={{ height: `${h}%` }} />
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
+                                        <Activity className="w-3 h-3 text-emerald-400" />
+                                    </div>
                                     <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity Trace</div>
                                     <div className={`text-xl font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div>
+                                    {/* New: Volatility Heatbar */}
+                                    <div className="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                        <div 
+                                            className={`h-full transition-all duration-1000 ${selectedToken.change > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`} 
+                                            style={{ width: `${Math.min(Math.abs(selectedToken.change) * 5, 100)}%` }} 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Liquidity Depth</div>
+                                    <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">
+                                        ${selectedToken.id === 'ETH' ? '476M' : selectedToken.id === 'BTC' ? '614M' : '1.2M'}
+                                    </div>
+                                    <div className="mt-2 text-[9px] font-black text-zinc-500 uppercase flex items-center gap-1">
+                                        <ShieldCheck className="w-3 h-3 text-blue-500" /> Stable Depth
+                                    </div>
+                                </div>
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Order Asymmetry</div>
+                                    <div className="text-xl font-black text-emerald-400 font-mono italic tabular-nums">52/48</div>
+                                    <div className="mt-2 text-[9px] font-black text-zinc-500 uppercase flex items-center gap-1">
+                                        <ArrowUpRight className="w-3 h-3 text-emerald-500" /> Bid Heavy
+                                    </div>
                                 </div>
                             </div>
                         </div>
