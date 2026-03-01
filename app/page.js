@@ -18,7 +18,7 @@ export default function Dashboard() {
             { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbol: 'BINANCE:ETHUSDT' },
             { id: 'XMR', cgId: 'monero', symbol: 'KRAKEN:XMRUSD' }, 
             { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbol: 'COINBASE:DEGENUSDC' },
-            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbol: 'COINBASE:CLANKERPERP' },
+            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbol: 'COINBASE:CLANKERUSDC.P' },
             { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbol: 'COINBASE:BANKRCOINUSDC' }
         ];
         
