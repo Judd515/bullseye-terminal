@@ -61,6 +61,13 @@ export default function Dashboard() {
             consensus: getConsensus(s)
         }));
 
+        // Set the strongest indicator (max change) as the default selected token
+        const strongestToken = enhancedStats.reduce((max, token) => 
+            Math.abs(token.change) > Math.abs(max.change) ? token : max
+        , enhancedStats[0]);
+        
+        setSelectedToken(strongestToken);
+
         setData({ 
           total: 5000.00, 
           pnl: 0.00, 
