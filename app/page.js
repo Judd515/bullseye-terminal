@@ -41,7 +41,7 @@ export default function Dashboard() {
           history: [
              { id: 'BTC', price: btcEntryPrice, side: 'BUY', ts: '23:05:00', usd: 3500.00 }
           ],
-          sync_check: "V3.5_PRO_ACCURACY",
+          sync_check: "V3.6_ULTRA_ACCURACY_FORCE",
           logic: "Neural HUD synced to live on-chain balances. No simulation detected.",
           stats: enhancedStats
         });
@@ -150,7 +150,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
                         <div className="flex flex-col">
                             <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
-                            <span className="text-[7px] text-zinc-500 mt-2">v3.4_ULTRA</span>
+                            <span className="text-[7px] text-zinc-500 mt-2">v3.6_LIVE</span>
                         </div>
                         <div className="text-[10px] font-black text-zinc-600 tabular-nums">CASH: ${data.balance_usd.toLocaleString()}</div>
                     </div>
