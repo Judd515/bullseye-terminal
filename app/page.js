@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -9,6 +8,7 @@ import {
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [selectedToken, setSelectedToken] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,13 +41,26 @@ export default function Dashboard() {
                   ...t,
                   price, 
                   change: parseFloat((change || 0).toFixed(2)),
-                  signal: change > 5 ? 'BULLISH' : change < -5 ? 'BEARISH' : 'NEUTRAL',
                   isFC: ['DEGEN', 'CLANKER'].includes(t.id)
                 };
-            } catch { return { ...t, price: 0, change: 0, signal: 'NEUTRAL' } ; }
+            } catch { return { ...t, price: 0, change: 0 } ; }
         };
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
+        
+        const getConsensus = (token) => {
+            if (token.change > 10) return { label: 'ACCUMULATE+', color: 'text-emerald-400', desc: "Parabolic velocity detected. Momentum model suggests trend continuation. Target: Next liquidity ceiling." };
+            if (token.change > 5) return { label: 'ACCUMULATE', color: 'text-emerald-500', desc: "Bullish breakout confirmed. Technical indicators aligning for further upside. RSI remains underbought." };
+            if (token.change < -10) return { label: 'LIQUIDATE', color: 'text-rose-600', desc: "Deep distribution detected. Trend breakdown imminent. Suggesting capital preservation." };
+            if (token.change < -5) return { label: 'REDUCE', color: 'text-rose-500', desc: "Weakness confirmed on-chain. Testing psychological support levels. Posture shifted to defensive." };
+            return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Opportunity cost suggests maintaining wait-and-see posture." };
+        };
+
+        const enhancedStats = resultStats.map(s => ({
+            ...s,
+            consensus: getConsensus(s)
+        }));
+
         setData({ 
           total: 5003.45, 
           pnl: 0.07, 
@@ -55,7 +68,10 @@ export default function Dashboard() {
           holdings: [
             { id: 'CLANKER', qty: "8.2", value: "3.45", pnl: "+1.2%" }
           ],
-          stats: resultStats
+          history: [
+            { id: 'CLANKER', price: 0.4206, side: 'BUY', ts: '20:15:00', usd: 3.45 }
+          ],
+          stats: enhancedStats
         });
       } catch (e) { console.error(e); }
     };
@@ -66,7 +82,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (selectedToken && selectedToken.symbol) {
-      // Small delay to ensure container is rendered
       const timer = setTimeout(() => {
         const container = document.getElementById('tradingview_chart');
         if (container) {
@@ -155,7 +170,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02]">
+                <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02] cursor-pointer hover:bg-emerald-500/[0.04] transition-all" onClick={() => setShowHistory(true)}>
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
                         <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
                         <div className="text-[10px] font-black text-zinc-600 tabular-nums">CASH: ${data.balance_usd.toLocaleString()}</div>
@@ -254,20 +269,98 @@ export default function Dashboard() {
                                 </div>
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                                     <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity Trace</div>
-                                    <div className={`text-xl font-black italic \${selectedToken.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{selectedToken.change}%</div>
+                                    <div className={`text-xl font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-white/[0.03] rounded-[2.5rem] p-8 border border-white/10 flex flex-col justify-between h-full text-left">
                             <div className="flex-1">
                                 <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic mb-6 leading-none underline underline-offset-8 decoration-blue-500/30">Neural_Consensus</div>
-                                <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-500'}`}>
-                                    {selectedToken.change > 5 ? 'ACCUMULATE' : 'MONITOR'}
+                                <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.consensus.color}`}>
+                                    {selectedToken.consensus.label}
                                 </div>
-                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">Consensus suggests horizontal compression. Technical indicators aligning for breakout test. Neural model awaiting confirmation.</p>
+                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">{selectedToken.consensus.desc}</p>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {showHistory && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 backdrop-blur-xl bg-black/60 overflow-y-auto">
+                <div className="bg-[#18181b] border border-white/10 rounded-[3rem] w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                        <div className="flex items-center gap-4 text-left">
+                            <div className="p-3 bg-emerald-600 rounded-2xl shadow-lg">
+                                <BarChart3 className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black italic tracking-tighter uppercase m-0 leading-none">Vault Operations</h2>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2 border border-white/10 px-2 py-1 rounded inline-block">Paper_Performance_Trace</div>
+                            </div>
+                        </div>
+                        <button onClick={() => setShowHistory(false)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
+                            <X className="w-6 h-6 text-zinc-400" />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-3xl">
+                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-2 opacity-60 italic">Total_Equity</div>
+                                <div className="text-3xl font-black text-white tracking-tighter tabular-nums">${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+                            </div>
+                            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-3xl">
+                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-2 opacity-60 italic">Available_Liquid</div>
+                                <div className="text-3xl font-black text-blue-400 tracking-tighter tabular-nums">${data.balance_usd.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+                            </div>
+                            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-3xl">
+                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-2 opacity-60 italic">Yield_Performance</div>
+                                <div className="text-3xl font-black text-emerald-400 tracking-tighter tabular-nums">+{data.pnl}%</div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 px-2">
+                                <Activity className="w-4 h-4 text-emerald-500" />
+                                <h3 className="text-[10px] font-black text-white tracking-[0.2em] uppercase italic">Raw_Trade_History</h3>
+                            </div>
+                            <div className="overflow-x-auto rounded-3xl border border-white/5 bg-white/[0.01]">
+                                <table className="w-full text-left border-separate border-spacing-0">
+                                    <thead className="bg-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-500">
+                                        <tr>
+                                            <th className="px-6 py-4">Timestamp</th>
+                                            <th className="px-6 py-4">Asset</th>
+                                            <th className="px-6 py-4">Side</th>
+                                            <th className="px-6 py-4">Price</th>
+                                            <th className="px-6 py-4 text-right">Value (USD)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {data.history && data.history.map((t, idx) => (
+                                            <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                                                <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.ts}</td>
+                                                <td className="px-6 py-4 font-black italic text-sm tracking-tight text-white">{t.id}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                                                        {t.side}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${t.price.toFixed(4)}</td>
+                                                <td className="px-6 py-4 font-mono text-[11px] text-white font-black text-right">${t.usd.toFixed(2)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="p-8 bg-black/40 border-t border-white/5 flex items-center gap-4 opacity-50">
+                        <ShieldCheck className="w-4 h-4 text-zinc-500" />
+                        <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">Immutable_Ledger_Finality_Established</span>
                     </div>
                 </div>
             </div>
