@@ -62,11 +62,12 @@ export default function Dashboard() {
         }));
 
         // Set the strongest indicator (max change) as the default selected token
-        const strongestToken = enhancedStats.reduce((max, token) => 
-            Math.abs(token.change) > Math.abs(max.change) ? token : max
-        , enhancedStats[0]);
-        
-        setSelectedToken(strongestToken);
+        if (!selectedToken) {
+          const strongestToken = enhancedStats.reduce((max, token) => 
+              Math.abs(token.change) > Math.abs(max.change) ? token : max
+          , enhancedStats[0]);
+          setSelectedToken(strongestToken);
+        }
 
         setData({ 
           total: 5000.00, 
@@ -115,7 +116,7 @@ export default function Dashboard() {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [selectedToken]);
+  }, [selectedToken, selectedToken?.symbol]);
 
   if (!data) return (
     <div className="min-h-screen bg-[#020203] flex flex-col items-center justify-center space-y-6">
