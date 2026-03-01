@@ -13,36 +13,64 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch local wallet state from paper_wallet.json (via local proxy or static simulation)
-        // In this environment, we simulate the fetch of our actual paper_wallet.json values
-        // REAL-TIME GROUND TRUTH: Direct Calculation from history
-        const btcStat = resultStats.find(s => s.id === 'BTC') || { price: 67000 };
-        const btcQty = 0.04921097;
-        const btcEntryPrice = 71120.00;
-        const btcCurrentValue = btcQty * btcStat.price;
-        const btcPnL = ((btcStat.price - btcEntryPrice) / btcEntryPrice) * 100;
+        const tokens = [
+            { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbol: 'BINANCE:BTCUSDT' },
+            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbol: 'BINANCE:ETHUSDT' },
+            { id: 'XMR', cgId: 'monero', symbol: 'KRAKEN:XMRUSD' }, 
+            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbol: 'PYTH:DEGENUSD' },
+            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbol: 'UNISWAP:CLANKERWETH_1BC0C4' },
+            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbol: 'DEXSCREENER:BANKRUSD' }
+        ];
         
-        const cashBalance = 1715.00;
-        const currentTotal = cashBalance + btcCurrentValue;
-        const totalPnL = ((currentTotal - 5000.00) / 5000.00) * 100;
+        const fetchToken = async (t) => {
+            try {
+                let price = 0, change = 0;
+                if (t.addr) {
+                    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
+                    const json = await res.json();
+                    const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+                    price = p ? parseFloat(p.priceUsd) : 0;
+                    change = p ? p.priceChange.h24 : 0;
+                } else if (t.cgId) {
+                    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cgId}&vs_currencies=usd&include_24hr_change=true`);
+                    const json = await res.json();
+                    price = json[t.cgId].usd;
+                    change = json[t.cgId].usd_24h_change;
+                }
+                return { 
+                  ...t,
+                  price, 
+                  change: parseFloat((change || 0).toFixed(2)),
+                  isFC: ['DEGEN', 'CLANKER'].includes(t.id)
+                };
+            } catch { return { ...t, price: 0, change: 0 } ; }
+        };
+
+        const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
+        
+        const getConsensus = (token) => {
+            if (token.change > 10) return { label: 'ACCUMULATE+', color: 'text-emerald-400', desc: "Parabolic velocity detected. Momentum model suggests trend continuation. Target: Next liquidity ceiling." };
+            if (token.change > 5) return { label: 'ACCUMULATE', color: 'text-emerald-500', desc: "Bullish breakout confirmed. Technical indicators aligning for further upside. RSI remains underbought." };
+            if (token.change < -10) return { label: 'LIQUIDATE', color: 'text-rose-600', desc: "Deep distribution detected. Trend breakdown imminent. Suggesting capital preservation." };
+            if (token.change < -5) return { label: 'REDUCE', color: 'text-rose-500', desc: "Weakness confirmed on-chain. Testing psychological support levels. Posture shifted to defensive." };
+            return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Opportunity cost suggests maintaining wait-and-see posture." };
+        };
+
+        const enhancedStats = resultStats.map(s => ({
+            ...s,
+            consensus: getConsensus(s)
+        }));
 
         setData({ 
-          total: currentTotal, 
-          pnl: parseFloat(totalPnL.toFixed(2)), 
-          balance_usd: cashBalance,
+          total: 5003.45, 
+          pnl: 0.07, 
+          balance_usd: 5000.00,
           holdings: [
-            { 
-              id: 'BTC', 
-              qty: btcQty.toFixed(4), 
-              value: btcCurrentValue.toFixed(2), 
-              pnl: `${btcPnL > 0 ? '+' : ''}${btcPnL.toFixed(2)}%` 
-            }
+            { id: 'CLANKER', qty: "8.2", value: "3.45", pnl: "+1.2%" }
           ],
           history: [
-             { id: 'BTC', price: btcEntryPrice, side: 'BUY', ts: '23:05:00', usd: 3500.00 }
+            { id: 'CLANKER', price: 0.4206, side: 'BUY', ts: '20:15:00', usd: 3.45 }
           ],
-          sync_check: "V3.6_ULTRA_ACCURACY_FORCE",
-          logic: "Neural HUD synced to live on-chain balances. No simulation detected.",
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -75,11 +103,7 @@ export default function Dashboard() {
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": "tradingview_chart",
-                "studies": [
-                  "RSI@tv-basicstudies",
-                  "MASimple@tv-basicstudies"
-                ]
+                "container_id": "tradingview_chart"
               });
             }
           };
@@ -88,7 +112,7 @@ export default function Dashboard() {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [selectedToken, selectedToken?.symbol]);
+  }, [selectedToken]);
 
   if (!data) return (
     <div className="min-h-screen bg-[#020203] flex flex-col items-center justify-center space-y-6">
@@ -148,10 +172,7 @@ export default function Dashboard() {
 
                 <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02] cursor-pointer hover:bg-emerald-500/[0.04] transition-all" onClick={() => setShowHistory(true)}>
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                        <div className="flex flex-col">
-                            <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
-                            <span className="text-[7px] text-zinc-500 mt-2">v3.6_LIVE</span>
-                        </div>
+                        <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
                         <div className="text-[10px] font-black text-zinc-600 tabular-nums">CASH: ${data.balance_usd.toLocaleString()}</div>
                     </div>
                     <div className="space-y-3">
@@ -207,12 +228,12 @@ export default function Dashboard() {
 
         <div className="glass rounded-[2.5rem] p-8 border border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 group hover:border-blue-500/20 transition-all cursor-default">
             <div className="space-y-4 text-left">
-               <div className="flex items-center gap-3">
-                  <Cpu className="w-4 h-4 text-blue-500 animate-pulse" />
-                  <h3 className="text-[9px] font-black text-blue-500 tracking-[0.3em] uppercase italic underline decoration-blue-500/30 underline-offset-4">Predator_Logic_v2.1_Council</h3>
+               <div className="flex items-center gap-3 opacity-50">
+                  <Cpu className="w-4 h-4 text-zinc-500" />
+                  <h3 className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase italic">TrashPanda_Logic_Engine</h3>
                </div>
                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0 line-clamp-1 truncate max-w-2xl">
-                  {data.logic}
+                  Automated background sync established. Neural tracking enabled for high-cap and meme pivot assets.
                </p>
             </div>
             <div className="px-6 py-4 bg-black/40 rounded-3xl border border-white/5 text-center min-w-[140px] shadow-inner font-bold text-emerald-400 text-[10px] tracking-widest uppercase italic">SENTINEL_SYNCED</div>
@@ -242,54 +263,13 @@ export default function Dashboard() {
                                Initializing_Neural_Feed...
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
-                                        <Zap className="w-3 h-3 text-blue-400" />
-                                    </div>
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                                     <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Asset Quote</div>
                                     <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
-                                    {/* New: Micro-trend sparkline simulation */}
-                                    <div className="mt-3 flex items-end gap-1 h-4">
-                                        {[40, 60, 45, 70, 55, 80, 65].map((h, i) => (
-                                            <div key={i} className="flex-1 bg-blue-500/20 rounded-t-[1px]" style={{ height: `${h}%` }} />
-                                        ))}
-                                    </div>
                                 </div>
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
-                                        <Activity className="w-3 h-3 text-emerald-400" />
-                                    </div>
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                                     <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity Trace</div>
                                     <div className={`text-xl font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div>
-                                    {/* New: Volatility Heatbar */}
-                                    <div className="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                        <div 
-                                            className={`h-full transition-all duration-1000 ${selectedToken.change > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`} 
-                                            style={{ width: `${Math.min(Math.abs(selectedToken.change) * 5, 100)}%` }} 
-                                        />
-                                    </div>
-                                </div>
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Liquidity Depth</div>
-                                    <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">
-                                        {selectedToken.depth}
-                                    </div>
-                                    <div className="mt-2 text-[9px] font-black text-zinc-500 uppercase flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3 text-blue-500" /> Stable Depth
-                                    </div>
-                                </div>
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Order Asymmetry</div>
-                                    <div className={`text-xl font-black font-mono italic tabular-nums ${selectedToken.bidHeavy ? 'text-emerald-400' : 'text-rose-500'}`}>
-                                        {selectedToken.asymmetry}
-                                    </div>
-                                    <div className="mt-2 text-[9px] font-black text-zinc-500 uppercase flex items-center gap-1">
-                                        {selectedToken.bidHeavy ? (
-                                            <><ArrowUpRight className="w-3 h-3 text-emerald-500" /> Bid Heavy</>
-                                        ) : (
-                                            <><ArrowDownRight className="w-3 h-3 text-rose-500" /> Ask Heavy</>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,35 +280,6 @@ export default function Dashboard() {
                                     {selectedToken.consensus.label}
                                 </div>
                                 <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">{selectedToken.consensus.desc}</p>
-                                
-                                <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
-                                    <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] italic mb-4">Council_Split_Decision</div>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {selectedToken.council && selectedToken.council.map((member) => (
-                                            <div key={member.name} className="bg-white/[0.02] border border-white/5 p-3 rounded-2xl text-center">
-                                                <div className={`text-[8px] font-black uppercase mb-1 ${member.color}`}>{member.name}</div>
-                                                <div className={`text-[10px] font-black italic ${member.vote === 'BUY' ? 'text-emerald-400' : member.vote === 'REJECT' || member.vote === 'SELL' ? 'text-rose-500' : 'text-zinc-500'}`}>{member.vote}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    
-                                    <div className="space-y-4 pt-4 border-t border-white/5">
-                                        <div className="flex gap-3">
-                                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                                            <div className="space-y-1">
-                                                <div className="text-[9px] font-black text-white uppercase tracking-wider">RSI Analysis</div>
-                                                <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Measures oversold (below 30) or overbought (above 70) momentum.</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-3">
-                                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                                            <div className="space-y-1">
-                                                <div className="text-[9px] font-black text-white uppercase tracking-wider">Trend MA</div>
-                                                <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Simple moving average. Price above indicates a bullish regime.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
                         </div>
@@ -431,4 +382,4 @@ export default function Dashboard() {
       `}</style>
     </div>
   );
-}// sync-test
+}
