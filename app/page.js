@@ -62,9 +62,9 @@ export default function Dashboard() {
         }));
 
         setData({ 
-          total: 5003.45, 
+          total: 5000.00, 
           pnl: 0.00, 
-          balance_usd: 5003.45,
+          balance_usd: 5000.00,
           holdings: [],
           history: [],
           stats: enhancedStats
