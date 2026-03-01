@@ -24,7 +24,8 @@ export default function Dashboard() {
           ],
           history: [
              { id: 'BTC', price: 71120.00, side: 'BUY', ts: '23:05:00', usd: 3500.00 }
-          ]
+          ],
+          sync_check: "V3.2_Active"
         };
 
         const tokens = [
