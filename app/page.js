@@ -48,12 +48,28 @@ export default function Dashboard() {
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
         
+        // Fetch Live App Data from GitHub
+        const appDataRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/paper_wallet.json?cb=' + Date.now());
+        const wallet = await appDataRes.json();
+        
+        const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
+        const rawHistory = await historyRes.json();
+
+        // Calculate Holdings Value
+        const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
+            const token = resultStats.find(s => s.id === id);
+            const value = (qty * (token?.price || 0)).toFixed(2);
+            return { id, qty: qty.toFixed(4), value, pnl: "Live" };
+        });
+
+        const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
+        const totalPnl = (((totalEquity - 5000) / 5000) * 100).toFixed(2);
+
         const getConsensus = (token) => {
-            if (token.change > 10) return { label: 'ACCUMULATE+', color: 'text-emerald-400', desc: "Parabolic velocity detected. Momentum model suggests trend continuation. Target: Next liquidity ceiling." };
-            if (token.change > 5) return { label: 'ACCUMULATE', color: 'text-emerald-500', desc: "Bullish breakout confirmed. Technical indicators aligning for further upside. RSI remains underbought." };
-            if (token.change < -10) return { label: 'LIQUIDATE', color: 'text-rose-600', desc: "Deep distribution detected. Trend breakdown imminent. Suggesting capital preservation." };
-            if (token.change < -5) return { label: 'REDUCE', color: 'text-rose-500', desc: "Weakness confirmed on-chain. Testing psychological support levels. Posture shifted to defensive." };
-            return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Opportunity cost suggests maintaining wait-and-see posture." };
+            if (token.change > 10) return { label: 'ACCUMULATE+', color: 'text-emerald-400', desc: "Parabolic velocity detected. Momentum model suggests trend continuation." };
+            if (token.change > 5) return { label: 'ACCUMULATE', color: 'text-emerald-500', desc: "Bullish breakout confirmed. Technical indicators aligning for further upside." };
+            if (token.change < -10) return { label: 'LIQUIDATE', color: 'text-rose-600', desc: "Deep distribution detected. Trend breakdown imminent." };
+            return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Posture: Neutral." };
         };
 
         const enhancedStats = resultStats.map(s => ({
@@ -62,15 +78,11 @@ export default function Dashboard() {
         }));
 
         setData({ 
-          total: 5003.45, 
-          pnl: 0.07, 
-          balance_usd: 5000.00,
-          holdings: [
-            { id: 'CLANKER', qty: "8.2", value: "3.45", pnl: "+1.2%" }
-          ],
-          history: [
-            { id: 'CLANKER', price: 0.4206, side: 'BUY', ts: '20:15:00', usd: 3.45 }
-          ],
+          total: totalEquity, 
+          pnl: totalPnl, 
+          balance_usd: wallet.balance_usd,
+          holdings: holdings,
+          history: Array.isArray(rawHistory) ? rawHistory.slice(-5).reverse() : [],
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -151,7 +163,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-4 flex items-center justify-end gap-2 text-emerald-400">
                <Activity className="w-3.5 h-3.5" />
-               <span className="text-[11px] font-black bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">+{data.pnl}% yield</span>
+               <span className="text-[11px] font-black bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">{data.pnl >= 0 ? '+' : ''}{data.pnl}% yield</span>
             </div>
           </div>
         </header>
@@ -318,7 +330,7 @@ export default function Dashboard() {
                             </div>
                             <div className="bg-white/[0.02] border border-white/5 p-6 rounded-3xl">
                                 <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-2 opacity-60 italic">Yield_Performance</div>
-                                <div className="text-3xl font-black text-emerald-400 tracking-tighter tabular-nums">+{data.pnl}%</div>
+                                <div className="text-3xl font-black text-emerald-400 tracking-tighter tabular-nums">{data.pnl >= 0 ? '+' : ''}{data.pnl}%</div>
                             </div>
                         </div>
 
