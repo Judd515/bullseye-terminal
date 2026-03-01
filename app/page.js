@@ -24,36 +24,46 @@ export default function Dashboard() {
         
         const fetchToken = async (t) => {
             try {
-                let price = 0, change = 0;
+                let price = 0, change = 0, liq = 0, h1_vol = 0;
                 if (t.addr) {
                     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
                     const json = await res.json();
                     const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
                     price = p ? parseFloat(p.priceUsd) : 0;
                     change = p ? p.priceChange.h24 : 0;
+                    liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
+                    h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
                 } else if (t.cgId) {
-                    // XMR Fallback Chain: CoinGecko -> CryptoCompare -> DexScreener
                     try {
                         const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cgId}&vs_currencies=usd&include_24hr_change=true`);
                         const json = await res.json();
                         price = json[t.cgId].usd;
                         change = json[t.cgId].usd_24h_change;
+                        // Use search for additional metrics
+                        const dres = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${t.cgId}`);
+                        const djson = await dres.json();
+                        const p = djson.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+                        liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
+                        h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
                     } catch {
-                        // Backup Fix: Try DexScreener search for XMR
                         const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=monero`);
                         const json = await res.json();
                         const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
                         price = p ? parseFloat(p.priceUsd) : 0;
                         change = p ? p.priceChange.h24 : 0;
+                        liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
+                        h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
                     }
                 }
                 return { 
                   ...t,
                   price, 
                   change: parseFloat((change || 0).toFixed(2)),
+                  liq,
+                  h1_vol,
                   isFC: ['DEGEN', 'CLANKER'].includes(t.id)
                 };
-            } catch { return { ...t, price: 0, change: 0 } ; }
+            } catch { return { ...t, price: 0, change: 0, liq: 0, h1_vol: 0 } ; }
         };
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
@@ -69,39 +79,30 @@ export default function Dashboard() {
         const enhancedStats = resultStats.map(s => {
             const consensus = getConsensus(s);
             
-            // Predator v2.4 UI Heuristics
-            // Derive asymmetry from price change + noise
+            // Predator v2.5 UI Heuristics (Using Real-Time Liquidity/Volume)
             const baseAsymmetry = 50 + (s.change * 0.4);
             const bidSide = Math.min(Math.max(Math.round(baseAsymmetry + (Math.random() * 6 - 3)), 35), 65);
             const askSide = 100 - bidSide;
             
-            // Depth benchmarks
-            let depthLabel = "$1.2M";
-            if (s.id === 'BTC') depthLabel = "$614M";
-            else if (s.id === 'ETH') depthLabel = "$476M";
-            else if (s.id === 'XMR') depthLabel = "$12.4M";
-            else depthLabel = `$${(Math.abs(s.change) * 0.1 + 0.8).toFixed(1)}M`;
+            const depthLabel = s.liq > 1000000 ? `$${(s.liq/1000000).toFixed(1)}M` : `$${(s.liq/1000).toFixed(1)}k`;
 
-            const liq = 1000000000;
-            const vol = s.price > 0 ? (s.price * 50000000) / 2642 : 0;
-            
             const council = [
                 { 
                     name: "The Bear", 
                     color: "text-rose-400", 
-                    vote: s.change > 15 ? "REJECT" : s.change > 10 ? "NEUTRAL" : "ACCEPT", 
-                    logic: s.change > 15 ? "Overextended. Bull trap imminent." : "Risk parameters within 1S.D." 
+                    vote: s.liq < 50000 ? "REJECT" : s.change > 15 ? "REJECT" : s.change > 10 ? "NEUTRAL" : "ACCEPT", 
+                    logic: s.liq < 50000 ? "Thin liquidity. High slippage." : s.change > 15 ? "Overextended. Bull trap imminent." : "Risk parameters within 1S.D." 
                 },
                 { 
                     name: "The Mooner", 
                     color: "text-blue-400", 
-                    vote: (s.change > 5 && (vol > liq * 0.1)) || s.change > 10 ? "BUY" : "NEUTRAL", 
+                    vote: (s.change > 5 && (s.h1_vol > s.liq * 0.1)) || s.change > 12 ? "BUY" : "NEUTRAL", 
                     logic: s.change > 5 ? "Velocity confirms breakout. Moon mission active." : "Sideways volume. Boring." 
                 },
                 { 
                     name: "The Quant", 
                     color: "text-emerald-400", 
-                    vote: s.change > 3 ? "BUY" : s.change < -5 ? "SELL" : "HOLD", 
+                    vote: s.change > 3 && s.h1_vol > 10000 ? "BUY" : s.change < -5 ? "SELL" : "HOLD", 
                     logic: s.change > 3 ? "Statistical alpha > 2.0. Trend confirmed." : "No significant drift detected." 
                 }
             ];
