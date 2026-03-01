@@ -17,8 +17,8 @@ export default function Dashboard() {
             { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbol: 'BINANCE:BTCUSDT' },
             { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbol: 'BINANCE:ETHUSDT' },
             { id: 'XMR', cgId: 'monero', symbol: 'KRAKEN:XMRUSD' }, 
-            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbol: 'DEXSCREENER:DEGENUSDC' },
-            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbol: 'DEXSCREENER:CLANKERETH' },
+            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbol: 'PYTH:DEGENUSD' },
+            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbol: 'UNISWAP:CLANKERWETH_1BC0C4' },
             { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbol: 'DEXSCREENER:BANKRUSD' }
         ];
         
@@ -66,28 +66,36 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (selectedToken && selectedToken.symbol) {
-      const script = document.createElement('script');
-      script.src = 'https://s3.tradingview.com/tv.js';
-      script.async = true;
-      script.onload = () => {
-        if (window.TradingView) {
-          new window.TradingView.widget({
-            "autosize": true,
-            "symbol": selectedToken.symbol,
-            "interval": "15",
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_top_toolbar": true,
-            "save_image": false,
-            "container_id": "tradingview_chart"
-          });
+      // Small delay to ensure container is rendered
+      const timer = setTimeout(() => {
+        const container = document.getElementById('tradingview_chart');
+        if (container) {
+          container.innerHTML = '';
+          const script = document.createElement('script');
+          script.src = 'https://s3.tradingview.com/tv.js';
+          script.async = true;
+          script.onload = () => {
+            if (window.TradingView) {
+              new window.TradingView.widget({
+                "autosize": true,
+                "symbol": selectedToken.symbol,
+                "interval": "15",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+              });
+            }
+          };
+          document.head.appendChild(script);
         }
-      };
-      document.head.appendChild(script);
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [selectedToken]);
 
@@ -97,7 +105,7 @@ export default function Dashboard() {
         <div className="w-16 h-16 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
         <Target className="w-6 h-6 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
       </div>
-      <div className="text-blue-500 font-bold tracking-widest text-[10px] uppercase animate-pulse italic text-center">Syncing neural_v10.6…</div>
+      <div className="text-blue-500 font-bold tracking-widest text-[10px] uppercase animate-pulse italic text-center">Syncing neural_v1.0…</div>
     </div>
   );
 
@@ -114,7 +122,7 @@ export default function Dashboard() {
                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(59,130,246,0.4)]">
                  <Target className="w-7 h-7 text-white" />
                </div>
-               <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ fontFamily: 'sans-serif' }}>BULLSEYE 10.6</h1>
+               <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>BULLSEYE 1.0</h1>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
@@ -123,41 +131,41 @@ export default function Dashboard() {
           </div>
           <div className="text-right">
             <div className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-widest mb-1 opacity-60">Vault_Port_Value</div>
-            <div className="text-5xl font-black text-white tracking-tighter tabular-nums">
+            <div className="text-5xl font-black text-white tracking-tighter tabular-nums" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               ${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}
             </div>
             <div className="mt-4 flex items-center justify-end gap-2 text-emerald-400">
                <Activity className="w-3.5 h-3.5" />
-               <span className="text-[11px] font-black bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">+{data.pnl}% yield</span>
+               <span className="text-[11px] font-black bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">+{data.pnl}% yield</span>
             </div>
           </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <div className="glass rounded-[2.5rem] p-8 bg-blue-500/5 border-blue-500/20 flex flex-col justify-between group overflow-hidden relative min-h-[260px]">
+                <div className="glass rounded-[2.5rem] p-8 neo-gradient border-blue-500/20 flex flex-col justify-between group overflow-hidden relative min-h-[260px]">
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <BrainCircuit className="w-5 h-5 text-blue-400" />
                             <h2 className="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase italic border-b border-blue-500/20 pb-1.5">Decision Node</h2>
                         </div>
-                        <p className="text-xl text-white font-bold leading-snug italic tracking-tight m-0">
-                            “Sentinel v10.6 active. Real-time cron schedule established. Monitoring Base breakout pivot points.”
+                        <p className="text-xl text-white font-bold leading-snug italic tracking-tight m-0 text-left">
+                            “Sentinel v1.0 active. Horizontal liquidity compression identified. Probability of breakout move remains high.”
                         </p>
                     </div>
                 </div>
 
                 <div className="glass rounded-[2.5rem] p-8 border-emerald-500/20 bg-emerald-500/[0.02]">
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                        <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic">Paper Holdings</h2>
-                        <div className="text-[10px] font-black text-zinc-600">USD: ${data.balance_usd.toLocaleString()}</div>
+                        <h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic underline underline-offset-8">Paper holdings</h2>
+                        <div className="text-[10px] font-black text-zinc-600 tabular-nums">CASH: ${data.balance_usd.toLocaleString()}</div>
                     </div>
                     <div className="space-y-3">
                         {data.holdings && data.holdings.length > 0 ? data.holdings.map(h => (
                             <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                                <div className="flex items-center gap-3 text-zinc-100">
+                                <div className="flex items-center gap-3">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_#10b981]"></div>
-                                    <span className="font-extrabold text-sm uppercase">{h.id}</span>
+                                    <span className="font-extrabold text-sm text-zinc-100 uppercase">{h.id}</span>
                                     <span className="text-[9px] text-zinc-600 font-bold uppercase">{h.qty}&nbsp;qty</span>
                                 </div>
                                 <div className="text-right">
@@ -178,11 +186,11 @@ export default function Dashboard() {
                         <Radio className="w-4 h-4" /> Market_Surveillance
                     </div>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-separate border-spacing-y-3">
+                <div className="overflow-x-auto min-w-0">
+                    <table className="w-full text-left border-separate border-spacing-y-3 px-2">
                         <tbody>
                             {data.stats.map((s) => (
-                                <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer text-left">
+                                <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer">
                                     <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/[0.05] rounded-l-2xl flex items-center gap-3 group-hover:bg-white/[0.06] transition-colors">
                                         <div className={`p-1.5 rounded-lg border border-white/5 ${s.isFC ? 'bg-blue-600/20 text-blue-400' : 'bg-white/5 text-zinc-700'}`}>
                                             <Coins className="w-4 h-4" />
@@ -210,12 +218,10 @@ export default function Dashboard() {
                   <h3 className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase italic">TrashPanda_Logic_Engine</h3>
                </div>
                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0 line-clamp-1 truncate max-w-2xl">
-                  Automated background sync established via OpenClaw scheduler. Neural tracking enabled for high-cap and meme pivot assets.
+                  Automated background sync established. Neural tracking enabled for high-cap and meme pivot assets.
                </p>
             </div>
-            <div className="px-6 py-4 bg-black/40 rounded-3xl border border-white/5 text-center min-w-[140px] shadow-inner">
-               <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">SENTINEL_SYNCED</div>
-            </div>
+            <div className="px-6 py-4 bg-black/40 rounded-3xl border border-white/5 text-center min-w-[140px] shadow-inner font-bold text-emerald-400 text-[10px] tracking-widest uppercase italic">SENTINEL_SYNCED</div>
         </div>
 
         {selectedToken && (
@@ -228,7 +234,7 @@ export default function Dashboard() {
                             </div>
                             <div>
                                 <h2 className="text-3xl font-black italic tracking-tighter uppercase m-0 leading-none">{selectedToken.id} / USD</h2>
-                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2">Strategic_Intelligence_Trace</div>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2 border border-white/10 px-2 py-1 rounded inline-block">Strategic_Intelligence_Trace</div>
                             </div>
                         </div>
                         <button onClick={() => setSelectedToken(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
@@ -238,26 +244,27 @@ export default function Dashboard() {
 
                     <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-6 text-left">
-                            <div id="tradingview_chart" className="bg-black/40 border border-white/5 rounded-[2rem] aspect-video w-full overflow-hidden shadow-inner">
+                            <div id="tradingview_chart" className="bg-black/60 border border-white/5 rounded-[2rem] aspect-video w-full overflow-hidden shadow-inner flex items-center justify-center text-zinc-700 font-black uppercase tracking-[0.4em] text-[10px]">
+                               Initializing_Neural_Feed...
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Quote</div>
-                                    <div className="text-xl font-black text-zinc-200 font-mono italic">${selectedToken.price}</div>
+                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Asset Quote</div>
+                                    <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
                                 </div>
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Neural Velocity</div>
-                                    <div className={`text-xl font-black italic ${selectedToken.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{selectedToken.change}%</div>
+                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity Trace</div>
+                                    <div className={`text-xl font-black italic \${selectedToken.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{selectedToken.change}%</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/10 flex flex-col h-full text-left">
+                        <div className="bg-white/[0.03] rounded-[2.5rem] p-8 border border-white/10 flex flex-col justify-between h-full text-left">
                             <div className="flex-1">
-                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic mb-6 leading-none">Neural Consensus</div>
-                                <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-600'}`}>
+                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic mb-6 leading-none underline underline-offset-8 decoration-blue-500/30">Neural_Consensus</div>
+                                <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-500'}`}>
                                     {selectedToken.change > 5 ? 'ACCUMULATE' : 'MONITOR'}
                                 </div>
-                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">Indicators suggesting high horizontal compression. Scanning for 15m breakout confirmation.</p>
+                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">Consensus suggests horizontal compression. Technical indicators aligning for breakout test. Neural model awaiting confirmation.</p>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
                         </div>
@@ -266,12 +273,20 @@ export default function Dashboard() {
             </div>
         )}
 
-        <style jsx global>{`
-          .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5); }
-          .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.07) 0%, rgba(147, 51, 234, 0.03) 100%); }
-          .glow-blue { filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5)); }
-        `}</style>
+        <footer className="pt-20 pb-12 flex flex-col md:flex-row justify-between items-center gap-6 opacity-30">
+            <div className="text-[9px] font-black tracking-[0.4em] text-zinc-700 uppercase italic">TrashPanda Strategic Ops • v1.0.0_PRO</div>
+            <div className="flex gap-8 italic uppercase font-black text-[9px] text-zinc-500 items-center justify-end">
+               <div className="flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-cyan-500" /> Edge_Sync</div>
+               <div className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> Core_Secured</div>
+            </div>
+        </footer>
+
       </div>
+      <style jsx global>{`
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5); }
+        .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.07) 0%, rgba(147, 51, 234, 0.03) 100%); }
+        .glow-blue { filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5)); }
+      `}</style>
     </div>
   );
 }
