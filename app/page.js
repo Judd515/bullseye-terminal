@@ -243,9 +243,9 @@ export default function Dashboard() {
 
         <div className="glass rounded-[2.5rem] p-8 border border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 group hover:border-blue-500/20 transition-all cursor-default">
             <div className="space-y-4 text-left">
-               <div className="flex items-center gap-3 opacity-50">
-                  <Cpu className="w-4 h-4 text-blue-500" />
-                  <h3 className="text-[9px] font-black text-blue-500 tracking-[0.3em] uppercase italic underline decoration-blue-500/30 underline-offset-4">Predator_Logic_v2.0_Council</h3>
+               <div className="flex items-center gap-3">
+                  <Cpu className="w-4 h-4 text-blue-500 animate-pulse" />
+                  <h3 className="text-[9px] font-black text-blue-500 tracking-[0.3em] uppercase italic underline decoration-blue-500/30 underline-offset-4">Predator_Logic_v2.1_Council</h3>
                </div>
                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0 line-clamp-1 truncate max-w-2xl">
                   {data.logic}
