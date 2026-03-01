@@ -280,6 +280,23 @@ export default function Dashboard() {
                                     {selectedToken.consensus.label}
                                 </div>
                                 <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">{selectedToken.consensus.desc}</p>
+                                
+                                <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
+                                    <div className="flex gap-3">
+                                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                                        <div className="space-y-1">
+                                            <div className="text-[9px] font-black text-white uppercase tracking-wider">RSI Analysis</div>
+                                            <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Measures oversold (below 30) or overbought (above 70) momentum.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                                        <div className="space-y-1">
+                                            <div className="text-[9px] font-black text-white uppercase tracking-wider">Trend MA</div>
+                                            <p className="text-[11px] text-zinc-500 font-medium italic leading-relaxed">Simple moving average. Price above indicates a bullish regime.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
                         </div>
