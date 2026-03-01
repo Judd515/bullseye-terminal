@@ -32,10 +32,20 @@ export default function Dashboard() {
                     price = p ? parseFloat(p.priceUsd) : 0;
                     change = p ? p.priceChange.h24 : 0;
                 } else if (t.cgId) {
-                    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cgId}&vs_currencies=usd&include_24hr_change=true`);
-                    const json = await res.json();
-                    price = json[t.cgId].usd;
-                    change = json[t.cgId].usd_24h_change;
+                    // XMR Fallback Chain: CoinGecko -> CryptoCompare -> DexScreener
+                    try {
+                        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cgId}&vs_currencies=usd&include_24hr_change=true`);
+                        const json = await res.json();
+                        price = json[t.cgId].usd;
+                        change = json[t.cgId].usd_24h_change;
+                    } catch {
+                        // Backup Fix: Try DexScreener search for XMR
+                        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=monero`);
+                        const json = await res.json();
+                        const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+                        price = p ? parseFloat(p.priceUsd) : 0;
+                        change = p ? p.priceChange.h24 : 0;
+                    }
                 }
                 return { 
                   ...t,
