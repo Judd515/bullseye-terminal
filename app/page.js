@@ -121,8 +121,8 @@ export default function Dashboard() {
           script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
           script.async = true;
           const symbolMap = {
-            'BANKR': 'UNISWAP:BANKR_22AF33.USD',
-            'CLANKER': 'UNISWAP:CLANKER_1BC0C4.USD',
+            'BANKR': 'COINBASE:BNKRUSD',
+            'CLANKER': 'DEXSCREENER:0x1bc0c42215582d5a085795f4badbac3ff36d1bcb',
             'DEGEN': 'COINBASE:DEGENUSD',
             'BTC': 'BINANCE:BTCUSDT',
             'ETH': 'BINANCE:ETHUSDT',
