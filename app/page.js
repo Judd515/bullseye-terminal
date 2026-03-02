@@ -126,11 +126,20 @@ export default function Dashboard() {
         const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
             const token = resultStats.find(s => s.id === id);
             const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
-            // Calculate Profit for this holding from history
-            const lastBuy = historyArray.find(t => t.symbol === id && t.side === 'BUY');
-            const entryPrice = lastBuy ? lastBuy.price : (token?.price || 0);
-            const profitVal = lastBuy ? (parseFloat(value) - (parseFloat(qty) * entryPrice)).toFixed(2) : "0.00";
-            const profitPct = lastBuy ? (((token?.price || 0) - entryPrice) / entryPrice * 100).toFixed(2) : "0.00";
+            
+            // Reconcile Profit: Find the MOST RECENT Buy that hasn't been closed by a Sell
+            const relevantTrades = historyArray.filter(t => t.symbol === id);
+            let entryPrice = token?.price || 0;
+            if (relevantTrades.length > 0) {
+                // Find index of the very last Sell to see where current "position" started
+                const lastSellIdx = [...relevantTrades].reverse().findIndex(t => t.side === 'SELL');
+                const lastPosTrades = lastSellIdx === -1 ? relevantTrades : relevantTrades.slice(relevantTrades.length - lastSellIdx);
+                const lastBuy = lastPosTrades.find(t => t.side === 'BUY');
+                if (lastBuy) entryPrice = lastBuy.price;
+            }
+
+            const profitVal = (parseFloat(value) - (parseFloat(qty) * entryPrice)).toFixed(2);
+            const profitPct = (((token?.price || 0) - entryPrice) / entryPrice * 100).toFixed(2);
             
             return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal, profitPct };
         });
