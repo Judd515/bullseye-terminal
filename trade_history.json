@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "timestamp": "2026-03-01 14:20:00 PST",
+    "symbol": "BTC",
+    "side": "BUY",
+    "price": 94235.12,
+    "amount_usd": 3799.50,
+    "logic": "Council Consensus: BULLISH. Breakout confirmed by Mooner/Quant."
+  },
+  {
+    "timestamp": "2026-03-02 08:57:00 PST",
+    "symbol": "BANKR",
+    "side": "SELL",
+    "price": 0.00124,
+    "amount_usd": 450.25,
+    "logic": "Liquidation: Support levels failed. Protecting capital."
+  },
+  {
+    "timestamp": "2026-03-02 08:57:00 PST",
+    "symbol": "XMR",
+    "side": "SELL",
+    "price": 168.45,
+    "amount_usd": 512.10,
+    "logic": "Liquidation: Technical breakdown detected by The Quant."
+  }
+]
