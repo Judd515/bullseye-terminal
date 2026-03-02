@@ -50,9 +50,11 @@ export default function Dashboard() {
         
         // Fetch Live App Data from GitHub
         const appDataRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/paper_wallet.json?cb=' + Date.now());
+        if (!appDataRes.ok) throw new Error('Wallet fetch failed');
         const wallet = await appDataRes.json();
         
         const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
+        if (!historyRes.ok) throw new Error('History fetch failed');
         const rawHistory = await historyRes.json();
 
         // Calculate Holdings Value
