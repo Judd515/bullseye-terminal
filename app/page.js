@@ -126,7 +126,13 @@ export default function Dashboard() {
         const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
             const token = resultStats.find(s => s.id === id);
             const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
-            return { id, qty: parseFloat(qty), value: parseFloat(value) };
+            // Calculate Profit for this holding from history
+            const lastBuy = historyArray.find(t => t.symbol === id && t.side === 'BUY');
+            const entryPrice = lastBuy ? lastBuy.price : (token?.price || 0);
+            const profitVal = lastBuy ? (parseFloat(value) - (parseFloat(qty) * entryPrice)).toFixed(2) : "0.00";
+            const profitPct = lastBuy ? (((token?.price || 0) - entryPrice) / entryPrice * 100).toFixed(2) : "0.00";
+            
+            return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal, profitPct };
         });
 
         const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + h.value, 0);
@@ -273,7 +279,7 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-3">
                         {data.holdings.map(h => (
-                            <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+                                <div className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-2xl p-4">
                                 <div className="flex items-center gap-3 text-left">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_#10b981]"></div>
                                     <div className="flex flex-col">
@@ -283,7 +289,9 @@ export default function Dashboard() {
                                 </div>
                                 <div className="text-right">
                                     <div className="text-sm font-black text-white font-mono">$ {h.value.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
-                                    <div className="text-[9px] font-black text-emerald-400">{(h.value / data.total * 100).toFixed(1)}% weight</div>
+                                    <div className={`text-[9px] font-black ${parseFloat(h.profitVal) >= 0 ? 'text-emerald-400' : 'text-rose-500'}`}>
+                                        {parseFloat(h.profitVal) >= 0 ? '+' : ''}{h.profitVal} ({h.profitPct}%)
+                                    </div>
                                 </div>
                             </div>
                         ))}
