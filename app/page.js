@@ -64,8 +64,8 @@ export default function Dashboard() {
         // Calculate Holdings Value
         const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
             const token = resultStats.find(s => s.id === id);
-            const value = (qty * (token?.price || 0)).toFixed(2);
-            return { id, qty: qty.toFixed(4), value, pnl: "Live" };
+            const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
+            return { id, qty: parseFloat(qty).toFixed(4), value, pnl: "Live" };
         });
 
         const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
