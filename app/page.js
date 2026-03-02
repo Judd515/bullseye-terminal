@@ -18,10 +18,9 @@ export default function Dashboard() {
         const tokens = [
             { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'] },
             { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'] },
-            { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD', 'BINANCE:XMRUSDT'] }, 
-            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['UNISWAP:DEGENWETH_4ED4E8', 'DEXSCREENER:DEGENUSD'] },
-            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['UNISWAP:CLANKERWETH_1BC0C4', 'DEXSCREENER:CLANKERUSD'] },
-            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['UNISWAP:BANKRUSD', 'DEXSCREENER:BANKRUSD'] }
+            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD', 'KRAKEN:DEGENUSD', 'DEXSCREENER:DEGENUSD'] },
+            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['CRYPTOCAP:CLANKER', 'DEXSCREENER:CLANKERUSD'] },
+            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['CRYPTOCAP:BANKR', 'DEXSCREENER:BANKRUSD'] }
         ];
         
         const fetchToken = async (t) => {
@@ -138,48 +137,42 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (selectedToken && selectedToken.symbols) {
+    if (selectedToken && selectedToken.id) {
       const widgetContainer = document.getElementById('tradingview_chart');
       if (!widgetContainer) return;
       
       widgetContainer.innerHTML = '';
-      let symIdx = 0;
       
-      const loadWidget = (symbol) => {
-          const script = document.createElement('script');
-          script.src = 'https://s3.tradingview.com/tv.js';
-          script.async = true;
-          script.onload = () => {
-            if (window.TradingView) {
-              new window.TradingView.widget({
-                "autosize": true,
-                "symbol": symbol,
-                "interval": "15",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#f1f3f6",
-                "enable_publishing": false,
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_chart",
-                "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies"],
-                "onChartReady": function() {
-                    console.log("Chart Loaded: " + symbol);
-                },
-                "onSymbolNotFound": function() {
-                  if (symIdx < selectedToken.symbols.length - 1) {
-                    symIdx++;
-                    loadWidget(selectedToken.symbols[symIdx]);
-                  }
-                }
-              });
-            }
-          };
-          document.head.appendChild(script);
+      const script = document.createElement('script');
+      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+      script.async = true;
+      script.type = 'text/javascript';
+      
+      // Map token IDs to the best DexScreener/TV pairs
+      const symbolMap = {
+        'CLANKER': 'UNISWAP:CLANKERWETH_1BC0C4',
+        'BANKR': 'DEXSCREENER:BANKRUSD',
+        'DEGEN': 'COINBASE:DEGENUSD',
+        'BTC': 'BINANCE:BTCUSDT',
+        'ETH': 'BINANCE:ETHUSDT'
       };
-      loadWidget(selectedToken.symbols[symIdx]);
+
+      const tvSymbol = symbolMap[selectedToken.id] || selectedToken.id;
+
+      script.innerHTML = JSON.stringify({
+        "autosize": true,
+        "symbol": tvSymbol,
+        "interval": "15",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "allow_symbol_change": true,
+        "calendar": false,
+        "support_host": "https://www.tradingview.com"
+      });
+      
+      widgetContainer.appendChild(script);
     }
   }, [selectedToken]);
 
