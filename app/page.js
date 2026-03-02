@@ -145,7 +145,7 @@ export default function Dashboard() {
           pnl: totalPnl, 
           balance_usd: wallet.balance_usd,
           holdings: holdings,
-          history: historyArray.length > 0 ? historyArray.reverse() : [],
+          history: historyArray.length >= 0 ? historyArray.reverse() : [],
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -455,15 +455,19 @@ export default function Dashboard() {
                                             <th className="px-6 py-4">Timestamp</th>
                                             <th className="px-6 py-4">Asset</th>
                                             <th className="px-6 py-4">Side</th>
-                                            <th className="px-6 py-4">Price</th>
+                                            <th className="px-6 py-4">Op Price</th>
+                                            <th className="px-6 py-4">Live Price</th>
                                             <th className="px-6 py-4">Value (USD)</th>
                                             <th className="px-6 py-4 text-right">Op PnL</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {data.history && data.history.length > 0 ? data.history.map((t, idx) => {
+                                            const liveToken = data.stats.find(s => s.id === (t.symbol || t.id));
+                                            const livePrice = liveToken ? liveToken.price : null;
                                             const isSell = t.side === 'SELL';
                                             const pnl = isSell ? ((parseFloat(t.amount_usd) - 450) / 450 * 100).toFixed(2) : null;
+                                            
                                             return (
                                                 <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
                                                     <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.timestamp || t.ts || 'N/A'}</td>
@@ -475,6 +479,9 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">
                                                         {parseFloat(t.price) < 1 ? `$ ${parseFloat(t.price).toFixed(6)}` : `$ ${parseFloat(t.price).toLocaleString(undefined, {minimumFractionDigits: 2})}`}
+                                                    </td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-blue-500 font-bold">
+                                                        {livePrice ? (livePrice < 1 ? `$ ${livePrice.toFixed(6)}` : `$ ${livePrice.toLocaleString()}`) : '--'}
                                                     </td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-white font-black">${(parseFloat(t.amount_usd || t.usd) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-right">
@@ -490,7 +497,7 @@ export default function Dashboard() {
                                             );
                                         }) : (
                                             <tr>
-                                                <td colSpan="6" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
+                                                <td colSpan="7" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
                                                     No neural operation logs found in ledger
                                                 </td>
                                             </tr>
