@@ -123,69 +123,10 @@ export default function Dashboard() {
             return { label, color, desc, council };
         };
 
-        // Initialize Council Debate Logic
-        const getCouncilData = (token, wallet) => {
-            const change = token.change;
-            const liq = token.liq || 50000; 
-            const vol = token.h1_vol || 10000;
-            
-            const council = [];
-
-            // THE BEAR
-            if (liq < 50000) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin. High slippage.` });
-            } else if (change > 15) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). High bull trap probability.` });
-            } else {
-                council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Risk parameters within standard range.' });
-            }
-
-            // THE MOONER
-            if (change > 5 && vol > (liq * 0.1)) {
-                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq ratio is ${(vol/liq).toFixed(2)}.` });
-            } else {
-                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Momentum not yet confirmed by volume spikes.' });
-            }
-
-            // THE QUANT
-            if (change > 3 && vol > 10000) {
-                council.push({ agent: 'The Quant', vote: 'BUY', logic: `Positive drift. 1h relative volume spikes confirm trend.` });
-            } else if (change < -5) {
-                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown. Momentum failure detected.' });
-            } else {
-                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations. No sig move.' });
-            }
-
-            return council;
-        };
-
-        const getConsensus = (token, wallet) => {
-            const council = getCouncilData(token, wallet);
-            const buys = council.filter(v => v.vote === 'BUY').length;
-            const sells = council.filter(v => v.vote === 'SELL').length;
-
-            let label = 'MONITOR';
-            let color = 'text-zinc-500';
-            let desc = "Horizontal liquidity compression identified.";
-
-            if (buys >= 2) { label = 'ACCUMULATE'; color = 'text-emerald-500'; desc = "Council consensus: Bullish momentum confirmed."; }
-            else if (sells >= 2) { label = 'LIQUIDATE'; color = 'text-rose-600'; desc = "Council consensus: Distribution/Trend failure."; }
-            else if (token.change > 10) { label = 'ACCUMULATE+'; color = 'text-emerald-400'; desc = "Parabolic velocity trace active."; }
-
-            return { label, color, desc, council };
-        };
-
         const enhancedStats = resultStats.map(s => ({
             ...s,
             consensus: getConsensus(s, wallet)
         }));
-
-        console.log('Final Data State:', {
-            total: totalEquity,
-            pnl: totalPnl,
-            holdings: holdings,
-            history: Array.isArray(rawHistory) ? rawHistory.slice(-5).reverse() : []
-        });
 
         setData({ 
           total: totalEquity, 
