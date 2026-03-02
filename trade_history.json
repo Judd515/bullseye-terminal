@@ -1,5 +1,21 @@
 [
   {
+    "timestamp": "2026-02-28 10:15:00 PST",
+    "symbol": "BANKR",
+    "side": "BUY",
+    "price": 0.00118,
+    "amount_usd": 400.00,
+    "logic": "Initial V1 Deployment: Base-layer memetics allocation."
+  },
+  {
+    "timestamp": "2026-02-28 10:15:00 PST",
+    "symbol": "XMR",
+    "side": "BUY",
+    "price": 165.20,
+    "amount_usd": 500.00,
+    "logic": "Initial V1 Deployment: Privacy-proxied volatility hedge."
+  },
+  {
     "timestamp": "2026-03-01 14:20:00 PST",
     "symbol": "BTC",
     "side": "BUY",
