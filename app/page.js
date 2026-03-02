@@ -135,7 +135,7 @@ export default function Dashboard() {
           pnl: totalPnl, 
           balance_usd: wallet.balance_usd,
           holdings: holdings,
-          history: historyArray.length > 0 ? historyArray.slice(-5).reverse() : [],
+          history: historyArray.length > 0 ? historyArray.reverse() : [],
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -474,7 +474,9 @@ export default function Dashboard() {
                                                             {t.side || 'N/A'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${(parseFloat(t.price) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">
+                                                        {parseFloat(t.price) < 1 ? `$ ${parseFloat(t.price).toFixed(6)}` : `$ ${parseFloat(t.price).toLocaleString(undefined, {minimumFractionDigits: 2})}`}
+                                                    </td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-white font-black">${(parseFloat(t.amount_usd || t.usd) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-right">
                                                         {pnl ? (
