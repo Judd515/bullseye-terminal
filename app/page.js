@@ -60,6 +60,8 @@ export default function Dashboard() {
         const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
         if (!historyRes.ok) throw new Error('History fetch failed');
         const rawHistory = await historyRes.json();
+        
+        const historyArray = Array.isArray(rawHistory) ? rawHistory : (rawHistory && typeof rawHistory === 'object' ? Object.values(rawHistory) : []);
 
         // Calculate Holdings Value
         const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
@@ -133,7 +135,7 @@ export default function Dashboard() {
           pnl: totalPnl, 
           balance_usd: wallet.balance_usd,
           holdings: holdings,
-          history: Array.isArray(rawHistory) ? rawHistory.slice(-5).reverse() : [],
+          history: historyArray.length > 0 ? historyArray.slice(-5).reverse() : [],
           stats: enhancedStats
         });
       } catch (e) { console.error(e); }
@@ -388,10 +390,10 @@ export default function Dashboard() {
                                                          (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-500/50' : 
                                                          'text-amber-500/50');
                                         return (
-                                            <div key={i} className={`p-4 rounded-2xl border ${voteColor.split(' ').slice(1,2).join(' ')} bg-black/40`}>
+                                            <div key={i} className={`p-4 rounded-2xl border $\{voteColor.split(' ').slice(1,2).join(' ')} bg-black/40`}>
                                                 <div className="flex justify-between items-center mb-2">
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${agentColor}`}>{c.agent}</span>
-                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${voteColor}`}>
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest $\{agentColor}`}>{c.agent}</span>
+                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded border $\{voteColor}`}>
                                                         {c.vote}
                                                     </span>
                                                 </div>
