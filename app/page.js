@@ -244,13 +244,15 @@ export default function Dashboard() {
             </div>
         )}
 
-        <footer className="pt-12 pb-8 border-t border-white/5"><div className="max-w-4xl mx-auto flex flex-col items-center gap-4 text-center">
-            <div className="text-[11px] font-black tracking-[0.6em] text-zinc-400 uppercase italic leading-none">TrashPanda Neural Ops • v1.3.1 PRO</div>
-            <div className="flex gap-6 italic uppercase font-black text-[9px] text-zinc-600 items-center justify-center">
-               <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5"><ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> Production Encryption Active</div>
-               <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5"><Globe className="w-3.5 h-3.5 text-cyan-500" /> Sovereign Liquidity Stream</div>
+        <footer className="pt-12 pb-8 border-t border-white/5">
+            <div className="max-w-4xl mx-auto flex flex-col items-center gap-4 text-center">
+                <div className="text-[11px] font-black tracking-[0.6em] text-zinc-400 uppercase italic leading-none">BullsEye Strategic Terminal • v1.3.1 PRO</div>
+                <div className="flex gap-6 italic uppercase font-black text-[9px] text-zinc-600 items-center justify-center">
+                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Real-Time Data Feed</div>
+                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Sentinel Monitoring Active</div>
+                </div>
             </div>
-        </div></footer>
+        </footer>
       </div>
       <style jsx global>{`.glass { background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); shadow: 0 10px 40px rgba(0,0,0,0.5); } .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%); } .scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
     </div>
