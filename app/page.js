@@ -457,23 +457,37 @@ export default function Dashboard() {
                                             <th className="px-6 py-4">Asset</th>
                                             <th className="px-6 py-4">Side</th>
                                             <th className="px-6 py-4">Price</th>
-                                            <th className="px-6 py-4 text-right">Value (USD)</th>
+                                            <th className="px-6 py-4">Value (USD)</th>
+                                            <th className="px-6 py-4 text-right">Op PnL</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
-                                        {data.history && data.history.length > 0 ? data.history.map((t, idx) => (
-                                            <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
-                                                <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.timestamp || t.ts || 'N/A'}</td>
-                                                <td className="px-6 py-4 font-black italic text-sm tracking-tight text-white">{t.symbol || t.id || 'N/A'}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                                                        {t.side || 'N/A'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${(parseFloat(t.price) || 0).toFixed(4)}</td>
-                                                <td className="px-6 py-4 font-mono text-[11px] text-white font-black text-right">${(parseFloat(t.amount_usd || t.usd) || 0).toFixed(2)}</td>
-                                            </tr>
-                                        )) : (
+                                        {data.history && data.history.length > 0 ? data.history.map((t, idx) => {
+                                            const isSell = t.side === 'SELL';
+                                            const pnl = isSell ? ((parseFloat(t.amount_usd) - 450) / 450 * 100).toFixed(2) : null;
+                                            return (
+                                                <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                                                    <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.timestamp || t.ts || 'N/A'}</td>
+                                                    <td className="px-6 py-4 font-black italic text-sm tracking-tight text-white">{t.symbol || t.id || 'N/A'}</td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                                                            {t.side || 'N/A'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${(parseFloat(t.price) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-white font-black">${(parseFloat(t.amount_usd || t.usd) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-right">
+                                                        {pnl ? (
+                                                            <span className={parseFloat(pnl) >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                                                                {parseFloat(pnl) >= 0 ? '+' : ''}{pnl}%
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-zinc-600">--</span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }) : (
                                             <tr>
                                                 <td colSpan="5" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
                                                     No neural operation logs found in ledger
