@@ -169,8 +169,7 @@ export default function Dashboard() {
                 "container_id": "tradingview_chart",
                 "studies": [
                   "RSI@tv-basicstudies",
-                  "MACD@tv-basicstudies",
-                  "StochasticRSI@tv-basicstudies"
+                  "MACD@tv-basicstudies"
                 ]
               });
             }
@@ -354,7 +353,7 @@ export default function Dashboard() {
                                     <div className="mt-4 pt-4 border-t border-white/5">
                                         <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Indicator Selection Logic</div>
                                         <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
-                                            Neural engine has auto-selected RSI/MACD/Stoch for this asset based on 24h volatility profile. High-frequency signals prioritized to capture momentum breakouts.
+                                            Neural engine has auto-selected RSI & MACD for this asset. High-conviction signals prioritized to maximize chart clarity and capture momentum breakouts.
                                         </p>
                                     </div>
                                 </div>
