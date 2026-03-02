@@ -1,27 +1,11 @@
 [
   {
-    "timestamp": "2026-02-28 10:15:00 PST",
-    "symbol": "BANKR",
-    "side": "BUY",
-    "price": 0.00118,
-    "amount_usd": 400.0,
-    "logic": "Initial V1 Deployment: Base-layer memetics allocation."
-  },
-  {
     "timestamp": "2026-03-01 14:20:00 PST",
     "symbol": "BTC",
     "side": "BUY",
     "price": 68235.12,
     "amount_usd": 3799.5,
     "logic": "Council Consensus: BULLISH. Breakout confirmed by Mooner/Quant."
-  },
-  {
-    "timestamp": "2026-03-02 08:57:00 PST",
-    "symbol": "BANKR",
-    "side": "SELL",
-    "price": 0.00124,
-    "amount_usd": 450.25,
-    "logic": "Liquidation: Support levels failed. Protecting capital."
   },
   {
     "timestamp": "2026-03-02 09:57:42 PST",
