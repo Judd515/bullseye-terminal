@@ -122,7 +122,7 @@ export default function Dashboard() {
           script.async = true;
           const symbolMap = {
             'BANKR': 'COINBASE:BNKRUSD',
-            'CLANKER': 'DEXSCREENER:0x1bc0c42215582d5a085795f4badbac3ff36d1bcb',
+            'CLANKER': 'COINBASE:CLANKERUSD',
             'DEGEN': 'COINBASE:DEGENUSD',
             'BTC': 'BINANCE:BTCUSDT',
             'ETH': 'BINANCE:ETHUSDT',
