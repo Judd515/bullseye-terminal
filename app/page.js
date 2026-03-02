@@ -455,6 +455,7 @@ export default function Dashboard() {
                                             <th className="px-6 py-4">Timestamp</th>
                                             <th className="px-6 py-4">Asset</th>
                                             <th className="px-6 py-4">Side</th>
+                                            <th className="px-6 py-4">Qty</th>
                                             <th className="px-6 py-4">Op Price</th>
                                             <th className="px-6 py-4">Live Price</th>
                                             <th className="px-6 py-4">Value (USD)</th>
@@ -467,6 +468,7 @@ export default function Dashboard() {
                                             const livePrice = liveToken ? liveToken.price : null;
                                             const isSell = t.side === 'SELL';
                                             const pnl = isSell ? ((parseFloat(t.amount_usd) - 450) / 450 * 100).toFixed(2) : null;
+                                            const qty = t.qty || (t.amount_usd / t.price);
                                             
                                             return (
                                                 <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
@@ -476,6 +478,9 @@ export default function Dashboard() {
                                                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                                                             {t.side || 'N/A'}
                                                         </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-300 font-medium">
+                                                        {qty > 1 ? qty.toLocaleString(undefined, {maximumFractionDigits: 2}) : qty.toFixed(6)}
                                                     </td>
                                                     <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">
                                                         {parseFloat(t.price) < 1 ? `$ ${parseFloat(t.price).toFixed(6)}` : `$ ${parseFloat(t.price).toLocaleString(undefined, {minimumFractionDigits: 2})}`}
