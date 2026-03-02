@@ -15,12 +15,12 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const tokens = [
-            { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'] },
-            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'] },
-            { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD', 'BINANCE:XMRUSDT'] },
-            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD', 'KRAKEN:DEGENUSD'] },
-            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['COINBASE:CLANKERUSD', 'GATEIO:CLANKERUSDT'] },
-            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['COINBASE:BNKRUSD', 'MEXC:BANKRUSDT'] }
+            { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'], tier: 'Anchor' },
+            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'], tier: 'Mid Tier' },
+            { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD'], tier: 'Mid Tier' },
+            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD'], tier: 'Mid Tier' },
+            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['COINBASE:CLANKERUSD'], tier: 'High Alpha' },
+            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['COINBASE:BNKRUSD'], tier: 'High Alpha' }
         ];
         
         const fetchToken = async (t) => {
@@ -120,7 +120,7 @@ export default function Dashboard() {
     }
   }, [selectedToken]);
 
-  if (!data) return <div className="min-h-screen bg-[#020203] flex items-center justify-center text-blue-500 font-black animate-pulse uppercase tracking-[0.5em]">Syncing_BullsEye_v1.3</div>;
+  if (!data) return <div className="min-h-screen bg-[#020203] flex items-center justify-center text-blue-500 font-black animate-pulse uppercase tracking-[0.5em]">Syncing_BullsEye_v1.3.2</div>;
 
   return (
     <div className="min-h-screen bg-[#020203] text-[#f4f4f5] font-sans p-4 md:p-12 relative overflow-hidden">
@@ -129,10 +129,10 @@ export default function Dashboard() {
         <header className="glass rounded-[2rem] p-6 bg-white/[0.01] border-white/[0.08] flex flex-col md:flex-row justify-between items-start md:items-end gap-4 shadow-2xl">
           <div className="space-y-3 text-left">
             <div className="flex items-center gap-4">
-               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><Target className="w-6 h-6 text-white" /></div>
+               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20"><Target className="w-6 h-6 text-white" /></div>
                <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none">BULLSEYE 1.3</h1>
             </div>
-            <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50" /><span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase">Production Active</span></div>
+            <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50" /><span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase leading-none">Production Active</span></div>
           </div>
           <div className="grid grid-cols-2 gap-8 text-right">
             <div><div className="text-[10px] text-zinc-500 font-extrabold uppercase mb-1 opacity-60">Vault Value</div><div className="text-2xl font-black text-white tracking-tighter tabular-nums">${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}</div></div>
@@ -144,13 +144,13 @@ export default function Dashboard() {
             <div className="lg:col-span-4 space-y-4">
                 <div className="glass rounded-[2rem] p-6 neo-gradient border-blue-500/20 flex flex-col justify-between min-h-[220px]">
                     <div className="text-left"><h2 className="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase italic border-b border-blue-500/20 pb-2 mb-4">Decision Node</h2>
-                    <p className="text-lg text-white font-bold leading-snug italic tracking-tight m-0 opacity-90">"Monitoring horizontal liquidity compression. Neural traces active across 6 markers."</p></div>
+                    <p className="text-lg text-white font-bold leading-snug italic tracking-tight m-0 opacity-90 text-left">"Applying dynamic asset tiers. Monitoring high-alpha and anchor liquidity pools."</p></div>
                 </div>
                 <div className="glass rounded-[2rem] p-6 border-emerald-500/20 bg-emerald-500/[0.02]">
                     <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2 text-left"><h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic">Paper holdings</h2><div className="text-[10px] font-black text-zinc-600 tabular-nums">${data.balance_usd.toLocaleString()} Cash</div></div>
-                    <div className="space-y-2">{data.holdings.map(h => (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide">{data.holdings.map(h => (
                         <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-xl p-3">
-                            <div className="text-left"><span className="font-extrabold text-sm text-zinc-100 uppercase block">{h.id}</span><span className="text-[8px] text-zinc-600 font-bold">{h.qty.toLocaleString()} qty</span></div>
+                            <div className="text-left leading-tight"><span className="font-extrabold text-sm text-zinc-100 uppercase block">{h.id}</span><span className="text-[8px] text-zinc-600 font-bold">{h.qty.toLocaleString()} qty</span></div>
                             <div className="text-right"><div className="text-sm font-black text-white font-mono">$ {h.value.toLocaleString(undefined, {minimumFractionDigits:2})}</div><div className={`text-[8px] font-black ${parseFloat(h.profitVal) >= 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{parseFloat(h.profitVal) >= 0 ? '+' : ''}{h.profitVal} ({h.profitPct}%)</div></div>
                         </div>
                     ))}</div>
@@ -159,18 +159,18 @@ export default function Dashboard() {
 
             <div className="lg:col-span-8 glass rounded-[2rem] p-6 space-y-4 bg-white/[0.01]">
                 <nav className="flex gap-8 mb-2 border-b border-white/5 pb-4">
-                    {['surveillance', 'ledger'].map(t => (<button key={t} onClick={() => setActiveTab(t)} className={`text-[10px] font-black uppercase tracking-[0.2em] italic ${activeTab === t ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-zinc-600'}`}>{t}</button>))}
+                    {['surveillance', 'ledger'].map(t => (<button key={t} onClick={() => setActiveTab(t)} className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all ${activeTab === t ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-zinc-600'}`}>{t}</button>))}
                 </nav>
                 {activeTab === 'surveillance' ? (
                 <div className="overflow-hidden"><table className="w-full text-left border-separate border-spacing-y-2">
                     <thead className="text-[8px] font-black text-zinc-600 uppercase"><tr><th className="px-4">Asset</th><th className="text-right">Quote</th><th className="text-right">Vel 24h</th><th className="text-right px-4">Consensus</th></tr></thead>
                     <tbody>{data.stats.map((s) => (
                         <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer">
-                            <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-all group-hover:bg-white/[0.08]"><div className="p-2 border border-white/5 rounded-lg bg-zinc-900 group-hover:text-blue-400 transition-colors"><Coins className="w-3.5 h-3.5" /></div><span className="font-black text-md block transition-colors group-hover:text-blue-400">{s.id}</span></td>
-                            <td className="px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-mono font-bold text-zinc-300 tabular-nums">${s.price > 1 ? s.price.toLocaleString(undefined, {minimumFractionDigits:2}) : s.price.toFixed(6)}</td>
-                            <td className={`px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-black italic ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</td>
+                            <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-all group-hover:bg-white/[0.08]"><div className="p-2 border border-white/5 rounded-lg bg-zinc-900 group-hover:text-blue-400 transition-colors"><Coins className="w-3.5 h-3.5" /></div><div className="text-left"><span className="font-black text-md block transition-colors group-hover:text-blue-400 leading-none">{s.id}</span><span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">{s.tier}</span></div></td>
+                            <td className="px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-mono font-bold text-zinc-300 tabular-nums text-sm">${s.price > 1 ? s.price.toLocaleString(undefined, {minimumFractionDigits:2}) : s.price.toFixed(6)}</td>
+                            <td className={`px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-black italic text-sm group-hover:bg-white/5 ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</td>
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right transition-all group-hover:bg-white/[0.08]">
-                                <div className={`text-[10px] font-black uppercase italic tracking-wider ${s.consensus.color}`}>{s.consensus.label}</div>
+                                <div className={`text-[9px] font-black uppercase italic tracking-wider ${s.consensus.color}`}>{s.consensus.label}</div>
                                 <div className="flex justify-end gap-1 mt-1">{s.consensus.council.map((c, idx) => (
                                     <div key={idx} className={`w-1 h-1 rounded-full ${c.vote === 'BUY' ? 'bg-emerald-500 shadow-sm' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'bg-rose-500 shadow-sm' : 'bg-zinc-700')}`} />
                                 ))}</div>
@@ -181,7 +181,7 @@ export default function Dashboard() {
                 ) : (
                 <div className="overflow-hidden"><table className="w-full text-left border-separate border-spacing-0">
                     <thead className="bg-white/5 text-[8px] font-black text-zinc-500 uppercase px-4"><tr><th className="px-4 py-3">TS</th><th className="px-4 py-3">Asset</th><th className="px-4 py-3 text-center">Op</th><th className="px-4 py-3 text-right">Qty</th><th className="px-4 py-3 text-right">Entry</th><th className="px-4 py-3 text-right">Live</th><th className="px-4 py-3 text-right">uPnL</th></tr></thead>
-                    <tbody className="divide-y divide-white/5">{[...data.history].reverse().map((t, idx) => {
+                    <tbody className="divide-y divide-white/5 border-spacing-0">{[...data.history].reverse().map((t, idx) => {
                         const s = data.stats.find(st => st.id === (t.symbol || t.id));
                         const lp = s ? s.price : 0; const ep = parseFloat(t.price) || 1;
                         const q = t.qty || (parseFloat(t.amount_usd) / ep);
@@ -228,13 +228,22 @@ export default function Dashboard() {
                         <div className="lg:col-span-4 bg-white/[0.03] rounded-[2.5rem] p-6 border border-white/10 flex flex-col justify-between h-full space-y-6 text-left">
                             <div className="space-y-6">
                                 <div><div className="text-[9px] font-black text-zinc-500 uppercase italic mb-3">Council Verdict</div><div className={`text-4xl font-black italic tracking-tighter uppercase leading-none ${selectedToken.consensus.color}`}>{selectedToken.consensus.label}</div><div className="text-[10px] text-zinc-500 italic mt-3 font-medium uppercase border-l-2 border-blue-500/30 pl-4 leading-relaxed">{selectedToken.consensus.desc}</div></div>
-                                <div className="space-y-3">{selectedToken.consensus.council.map((c, i) => (<div key={i} className="p-4 rounded-3xl border border-white/5 bg-black/40"><div className="flex justify-between items-center mb-1"><span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">{c.agent}</span><span className={`text-[9px] font-black px-2 py-0.5 rounded border ${c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/20' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/20' : 'text-zinc-500')}`}>{c.vote}</span></div><p className="text-[10px] text-zinc-400 italic m-0 leading-tight">{c.logic}</p></div>))}</div>
+                                <div className="space-y-3">{selectedToken.consensus.council.map((c, idx) => (<div key={idx} className="p-4 rounded-3xl border border-white/5 bg-black/40"><div className="flex justify-between items-center mb-1"><span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">{c.agent}</span><span className={`text-[9px] font-black px-2 py-0.5 rounded border ${c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/20' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/20' : 'text-zinc-500')}`}>{c.vote}</span></div><p className="text-[10px] text-zinc-400 italic m-0 leading-tight">{c.logic}</p></div>))}</div>
+                                
+                                <div className="p-4 border border-blue-500/20 bg-blue-500/5 rounded-[2rem] space-y-3">
+                                    <div className="text-[9px] font-black text-blue-400 uppercase italic tracking-widest">Asset Ladder Tier: {selectedToken.tier}</div>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 1 (33% Sell)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '5%' : selectedToken.id === 'BANKR' ? '20%' : '10%'} Growth</span></div>
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 2 (33% Sell)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '12%' : selectedToken.id === 'BANKR' ? '50%' : '25%'} Growth</span></div>
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Stop Loss (100%)</span><span className="text-rose-500 font-bold">-5% Drawdown</span></div>
+                                    </div>
+                                </div>
+
                                 <div className="mt-6 pt-4 border-t border-white/5 space-y-3 text-left"><div className="text-[9px] font-black text-zinc-600 uppercase italic">Strategy Hub</div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl text-left"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Max Slip</div><div className="text-[10px] text-zinc-300 font-mono">0.50%</div></div>
                                         <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl text-left"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Entry</div><div className="text-[10px] text-zinc-300 font-mono">{selectedToken.consensus.label.includes('STRONG') ? '25%' : '15%'}</div></div>
                                     </div>
-                                    <div className="p-3 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-2xl"><div className="flex items-center gap-2 mb-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /><span className="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Safety v1.3</span></div><p className="text-[9px] text-zinc-500 italic mt-1 leading-tight text-left">Protecting cash floor of $500. 2/3 consensus required.</p></div>
                                 </div>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-[2rem] text-center font-black italic text-sm tracking-tighter text-white no-underline mt-6 block uppercase transition-all shadow-lg active:scale-95">Explore Raw Feed</a>
@@ -244,15 +253,13 @@ export default function Dashboard() {
             </div>
         )}
 
-        <footer className="pt-12 pb-8 border-t border-white/5">
-            <div className="max-w-4xl mx-auto flex flex-col items-center gap-4 text-center">
-                <div className="text-[11px] font-black tracking-[0.6em] text-zinc-400 uppercase italic leading-none">BullsEye Strategic Terminal • v1.3.1 PRO</div>
-                <div className="flex gap-6 italic uppercase font-black text-[9px] text-zinc-600 items-center justify-center">
-                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Real-Time Data Feed</div>
-                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Sentinel Monitoring Active</div>
-                </div>
+        <footer className="pt-12 pb-8 border-t border-white/5"><div className="max-w-4xl mx-auto flex flex-col items-center gap-4 text-center">
+            <div className="text-[11px] font-black tracking-[0.6em] text-zinc-400 uppercase italic leading-none">BullsEye Strategic Terminal • v1.3.2 PRO</div>
+            <div className="flex gap-6 italic uppercase font-black text-[9px] text-zinc-600 items-center justify-center">
+               <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Real-Time Data Feed</div>
+               <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Sentinel Monitoring Active</div>
             </div>
-        </footer>
+        </div></footer>
       </div>
       <style jsx global>{`.glass { background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); shadow: 0 10px 40px rgba(0,0,0,0.5); } .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%); } .scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
     </div>
