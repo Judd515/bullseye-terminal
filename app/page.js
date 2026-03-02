@@ -440,83 +440,76 @@ export default function Dashboard() {
                                Initializing_Secure_Feed...
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Neural Indicators</div>
-                                    <div className="space-y-4">
-                                        {selectedToken.consensus.indicators.map((ind, i) => {
-                                            const indicatorDescriptions = {
-                                                'RSI (14)': 'Measures momentum speed. >70 is overbought (sell risk), <30 is oversold (buy signal).',
-                                                'MACD (12, 26, 9)': 'Trend-following momentum. Bullish cross confirms upward price acceleration.',
-                                                'Stoch RSI': 'Highly sensitive momentum oscillator identifying trend pivots faster than standard RSI.',
-                                                'Vol Spike (1h)': 'Compares 1h volume to 24h baseline; "Detected" indicates smart money flow/breakouts.'
-                                            };
-                                            return (
-                                                <div key={i} className="group/ind">
-                                                    <div className="flex justify-between items-center text-[11px] mb-1">
-                                                        <span className="text-zinc-500">{ind.name}</span>
-                                                        <span className={ind.color}>{ind.value}</span>
-                                                    </div>
-                                                    <p className="text-[9px] text-zinc-600 italic leading-tight m-0 opacity-0 group-hover/ind:opacity-100 transition-opacity">
-                                                        {indicatorDescriptions[ind.name] || 'Technical analysis indicator used for price velocity confirmation.'}
-                                                    </p>
-                                                </div>
-                                            );
-                                        })}
+                            <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2.5rem] shadow-inner">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-white/5 pb-6">
+                                    <div>
+                                        <div className="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] mb-2 italic">Neural Analysis Framework</div>
+                                        <div className="text-[12px] text-zinc-500 font-medium italic">Operational logic for current asset trace</div>
                                     </div>
-                                    <div className="mt-4 pt-4 border-t border-white/5">
-                                        <div className="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-3 italic">Council Analysis Framework</div>
-                                        <div className="space-y-4">
-                                            <div className="group/edu">
-                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
-                                                    <TrendingUp className="w-3 h-3 text-emerald-500" /> RSI (Strength)
-                                                </div>
-                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
-                                                    We monitor "Velocity Exhaustion." If RSI exceeds 70, the Council often VETOs a buy to avoid "buying the top." We look for signals below 40 where the asset is statistically oversold.
-                                                </p>
-                                            </div>
-                                            <div className="group/edu">
-                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
-                                                    <Activity className="w-3 h-3 text-blue-500" /> MACD (Trend)
-                                                </div>
-                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
-                                                    The "Engine Room." We look for a "Golden Cross" (Blue line crossing Orange) as a confirmation that the trend has shifted from distribution to accumulation.
-                                                </p>
-                                            </div>
-                                            <div className="group/edu">
-                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
-                                                    <ShieldCheck className="w-3 h-3 text-rose-500" /> Liquidity & Vol
-                                                </div>
-                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
-                                                    The Bear's domain. He ignores charts and looks at "Net Liquidity." If depth is under $30k, or 1h Volume is 50% of the 24h total (wash trading), he blocks execution.
-                                                </p>
-                                            </div>
+                                    <div className="flex gap-4">
+                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Quote</div>
+                                            <div className="text-sm font-black text-white font-mono">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
+                                        </div>
+                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity</div>
+                                            <div className={`text-sm font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl flex flex-col justify-between">
-                                    <div>
-                                        <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Market Metadata</div>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center text-[11px]">
-                                                <span className="text-zinc-500">24H Velocity</span>
-                                                <span className={selectedToken.consensus.color}>{selectedToken.change}%</span>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    <div className="space-y-6">
+                                        <div className="group/edu">
+                                            <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider">
+                                                <TrendingUp className="w-3.5 h-3.5 text-emerald-500" /> RSI (Strength)
                                             </div>
-                                            <div className="flex justify-between items-center text-[11px]">
-                                                <span className="text-zinc-500">Live Quote</span>
-                                                <span className="text-zinc-100">$ {selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</span>
+                                            <p className="text-[11px] text-zinc-500 italic leading-relaxed m-0">
+                                                Monitoring "Velocity Exhaustion." We VETO buys above 70 to avoid buying the top, prioritizing entries below 40 where the asset is statistically oversold.
+                                            </p>
+                                        </div>
+                                        <div className="group/edu pt-4 border-t border-white/5">
+                                            <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider">
+                                                <Activity className="w-3.5 h-3.5 text-blue-500" /> MACD (Trend)
                                             </div>
-                                            <div className="flex justify-between items-center text-[11px]">
-                                                <span className="text-zinc-500">Net Liquidity</span>
-                                                <span className="text-zinc-100">${(selectedToken.liq || 0).toLocaleString()}</span>
-                                            </div>
+                                            <p className="text-[11px] text-zinc-500 italic leading-relaxed m-0">
+                                                The "Engine Room." We wait for a "Golden Cross" (Blue line crossing Orange) to confirm the trend has shifted from distribution to accumulation.
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="mt-4 p-3 bg-blue-500/5 rounded-xl border border-blue-500/10">
-                                        <div className="text-[8px] text-blue-400 font-black uppercase tracking-widest mb-1">Analyst Note</div>
-                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
-                                            {selectedToken.change > 10 ? "Parabolic velocity detected. Watch for liquidity exhaustion." : "Horizontal compression active. Breakout probability remains high."}
-                                        </p>
+
+                                    <div className="space-y-6">
+                                        <div className="group/edu">
+                                            <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider">
+                                                <ShieldCheck className="w-3.5 h-3.5 text-rose-500" /> Liquidity & Vol
+                                            </div>
+                                            <p className="text-[11px] text-zinc-500 italic leading-relaxed m-0">
+                                                The Bear's domain. If depth is under $30k, or 1h Volume is {'>'}50% of the 24h total (wash trading), the trade is immediately REJECTED.
+                                            </p>
+                                        </div>
+                                        <div className="group/edu pt-4 border-t border-white/5">
+                                            <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider">
+                                                <TrendingUp className="w-3.5 h-3.5 text-purple-400" /> Mooner Score
+                                            </div>
+                                            <p className="text-[11px] text-zinc-500 italic leading-relaxed m-0">
+                                                Healthy trends require rising liquidity. If liquidity falls while price rises, it signals a pump-and-dump exit rather than a sustainable breakout.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-blue-500/[0.03] border border-blue-500/10 rounded-3xl p-6 flex flex-col justify-between">
+                                        <div className="space-y-4">
+                                            <div className="text-[9px] text-blue-400 font-black uppercase tracking-widest italic border-b border-blue-500/10 pb-2">Analyst Intelligence Trace</div>
+                                            <p className="text-[12px] text-zinc-400 font-medium italic leading-relaxed mb-4">
+                                                {selectedToken.change > 10 ? "Parabolic velocity detected. Watch for liquidity exhaustion." : "Horizontal compression active. Neural signature suggests high breakout probability."}
+                                            </p>
+                                        </div>
+                                        <div className="pt-4 border-t border-blue-500/10">
+                                            <div className="flex justify-between items-center text-[10px]">
+                                                <span className="text-zinc-600 uppercase font-bold tracking-widest">Net Liquidity</span>
+                                                <span className="text-zinc-200 font-mono">${(selectedToken.liq || 0).toLocaleString()}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
