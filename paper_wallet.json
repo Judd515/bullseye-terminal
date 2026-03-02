@@ -3,5 +3,9 @@
   "holdings": {
     "BTC": 0.0618276884016834,
     "BANKR": 771130.0337650942
+  },
+  "scaled_exits": {
+    "BTC": 0,
+    "BANKR": 0
   }
 }
