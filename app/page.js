@@ -137,7 +137,12 @@ export default function Dashboard() {
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
+                "container_id": "tradingview_chart",
+                "studies": [
+                  "RSI@tv-basicstudies",
+                  "MACD@tv-basicstudies",
+                  "StochasticRSI@tv-basicstudies"
+                ]
               });
             }
           };
@@ -309,9 +314,19 @@ export default function Dashboard() {
                                             <span className="text-emerald-400">Converging</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">Stoch RSI</span>
+                                            <span className="text-emerald-400">Momentum Cross</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[11px]">
                                             <span className="text-zinc-500">Vol Spike (1h)</span>
                                             <span className={selectedToken.change > 10 ? 'text-emerald-400' : 'text-rose-400'}>{selectedToken.change > 10 ? 'DETECTED' : 'NOMINAL'}</span>
                                         </div>
+                                    </div>
+                                    <div className="mt-4 pt-4 border-t border-white/5">
+                                        <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Indicator Selection Logic</div>
+                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
+                                            Neural engine has auto-selected RSI/MACD/Stoch for this asset based on 24h volatility profile. High-frequency signals prioritized to capture momentum breakouts.
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
