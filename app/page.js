@@ -448,12 +448,33 @@ export default function Dashboard() {
                                         })}
                                     </div>
                                     <div className="mt-4 pt-4 border-t border-white/5">
-                                        <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Neural Priority</div>
-                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
-                                            {selectedToken.liq < 50000 
-                                                ? "Liquidity Protection mode active. High priority on slippage risk and entry density."
-                                                : "Standard Neural configuration. RSI/MACD auto-loaded to visualize momentum pivots."}
-                                        </p>
+                                        <div className="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-3 italic">Council Analysis Framework</div>
+                                        <div className="space-y-4">
+                                            <div className="group/edu">
+                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
+                                                    <TrendingUp className="w-3 h-3 text-emerald-500" /> RSI (Strength)
+                                                </div>
+                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
+                                                    We monitor "Velocity Exhaustion." If RSI exceeds 70, the Council often VETOs a buy to avoid "buying the top." We look for signals below 40 where the asset is statistically oversold.
+                                                </p>
+                                            </div>
+                                            <div className="group/edu">
+                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
+                                                    <Activity className="w-3 h-3 text-blue-500" /> MACD (Trend)
+                                                </div>
+                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
+                                                    The "Engine Room." We look for a "Golden Cross" (Blue line crossing Orange) as a confirmation that the trend has shifted from distribution to accumulation.
+                                                </p>
+                                            </div>
+                                            <div className="group/edu">
+                                                <div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-1 uppercase">
+                                                    <ShieldCheck className="w-3 h-3 text-rose-500" /> Liquidity & Vol
+                                                </div>
+                                                <p className="text-[10px] text-zinc-500 italic leading-snug m-0">
+                                                    The Bear's domain. He ignores charts and looks at "Net Liquidity." If depth is under $30k, or 1h Volume is 50% of the 24h total (wash trading), he blocks execution.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl flex flex-col justify-between">
