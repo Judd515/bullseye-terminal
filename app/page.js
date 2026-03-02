@@ -161,8 +161,8 @@ export default function Dashboard() {
       
       // Map token IDs to the best DexScreener/TV pairs
       const symbolMap = {
-        'CLANKER': 'UNISWAP:CLANKERWETH_1BC0C4',
-        'BANKR': 'DEXSCREENER:BANKRUSD',
+        'CLANKER': 'DEXSCREENER:0x1bc0c42215582d5a085795f4badbac3ff36d1bcb',
+        'BANKR': 'DEXSCREENER:0x22af33fe49fd1fa80c7149773dde5890d3c76f3b',
         'DEGEN': 'COINBASE:DEGENUSD',
         'BTC': 'BINANCE:BTCUSDT',
         'ETH': 'BINANCE:ETHUSDT'
@@ -448,9 +448,11 @@ export default function Dashboard() {
                                         })}
                                     </div>
                                     <div className="mt-4 pt-4 border-t border-white/5">
-                                        <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Indicator Selection Logic</div>
+                                        <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Neural Priority</div>
                                         <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
-                                            Neural engine auto-selected RSI & MACD. High-conviction signals prioritized to maximize chart clarity and capture momentum breakouts.
+                                            {selectedToken.liq < 50000 
+                                                ? "Liquidity Protection mode active. High priority on slippage risk and entry density."
+                                                : "Standard Neural configuration. RSI/MACD auto-loaded to visualize momentum pivots."}
                                         </p>
                                     </div>
                                 </div>
