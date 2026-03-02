@@ -86,12 +86,23 @@ export default function Dashboard() {
             const rsi = (50 + (change * 1.5)).toFixed(1);
             const rsiStatus = rsi > 70 ? 'OVERBOUGHT' : (rsi < 30 ? 'OVERSOLD' : (change > 0 ? 'BULLISH' : 'NEUTRAL'));
             const macd = change > 2 ? 'Bullish Cross' : (change < -2 ? 'Bearish Cross' : 'Converging');
-            return [
+            
+            // DYNAMIC SELECTION LOGIC
+            const indicators = [
                 { name: 'RSI (14)', value: `${rsi} - ${rsiStatus}`, color: rsiStatus === 'BULLISH' || rsiStatus === 'OVERSOLD' ? 'text-emerald-400' : (rsiStatus === 'OVERBOUGHT' ? 'text-rose-400' : 'text-zinc-300') },
-                { name: 'MACD (12, 26, 9)', value: macd, color: macd.includes('Bullish') ? 'text-emerald-400' : (macd.includes('Bearish') ? 'text-rose-400' : 'text-emerald-400') },
-                { name: 'Stoch RSI', value: change > 0 ? 'Momentum Up' : 'Horizontal', color: change > 0 ? 'text-emerald-400' : 'text-zinc-400' },
-                { name: 'Vol Spike (1h)', value: token.h1_vol > (token.liq * 0.1) ? 'DETECTED' : 'NOMINAL', color: token.h1_vol > (token.liq * 0.1) ? 'text-emerald-400' : 'text-rose-400' }
+                { name: 'MACD (12, 26, 9)', value: macd, color: macd.includes('Bullish') ? 'text-emerald-400' : (macd.includes('Bearish') ? 'text-rose-400' : 'text-emerald-400') }
             ];
+
+            // Add conditional third indicator based on market conditions
+            if (token.liq < 50000) {
+                indicators.push({ name: 'Liq Risk', value: 'HIGH', color: 'text-rose-500' });
+            } else {
+                indicators.push({ name: 'Stoch RSI', value: change > 0 ? 'Momentum Up' : 'Horizontal', color: change > 0 ? 'text-emerald-400' : 'text-zinc-400' });
+            }
+
+            indicators.push({ name: 'Vol Spike (1h)', value: token.h1_vol > (token.liq * 0.1) ? 'DETECTED' : 'NOMINAL', color: token.h1_vol > (token.liq * 0.1) ? 'text-emerald-400' : 'text-rose-400' });
+            
+            return indicators;
         };
 
         const getConsensus = (token) => {
@@ -169,7 +180,11 @@ export default function Dashboard() {
         "locale": "en",
         "allow_symbol_change": true,
         "calendar": false,
-        "support_host": "https://www.tradingview.com"
+        "support_host": "https://www.tradingview.com",
+        "studies": [
+          "RSI@tv-basicstudies",
+          "MACD@tv-basicstudies"
+        ]
       });
       
       widgetContainer.appendChild(script);
