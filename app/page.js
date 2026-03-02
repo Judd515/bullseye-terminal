@@ -408,13 +408,62 @@ export default function Dashboard() {
                                Initializing_Secure_Feed...
                             </div>
                             
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {selectedToken.consensus.indicators.map((ind, i) => (
-                                    <div key={i} className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
-                                        <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">{ind.name}</div>
-                                        <div className={`text-xs font-black italic {ind.color}`}>{ind.value}</div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                                    <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Neural Indicators</div>
+                                    <div className="space-y-4">
+                                        {selectedToken.consensus.indicators.map((ind, i) => {
+                                            const indicatorDescriptions = {
+                                                'RSI (14)': 'Measures momentum speed. >70 is overbought (sell risk), <30 is oversold (buy signal).',
+                                                'MACD (12, 26, 9)': 'Trend-following momentum. Bullish cross confirms upward price acceleration.',
+                                                'Stoch RSI': 'Highly sensitive momentum oscillator identifying trend pivots faster than standard RSI.',
+                                                'Vol Spike (1h)': 'Compares 1h volume to 24h baseline; "Detected" indicates smart money flow/breakouts.'
+                                            };
+                                            return (
+                                                <div key={i} className="group/ind">
+                                                    <div className="flex justify-between items-center text-[11px] mb-1">
+                                                        <span className="text-zinc-500">{ind.name}</span>
+                                                        <span className={ind.color}>{ind.value}</span>
+                                                    </div>
+                                                    <p className="text-[9px] text-zinc-600 italic leading-tight m-0 opacity-0 group-hover/ind:opacity-100 transition-opacity">
+                                                        {indicatorDescriptions[ind.name] || 'Technical analysis indicator used for price velocity confirmation.'}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                ))}
+                                    <div className="mt-4 pt-4 border-t border-white/5">
+                                        <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Indicator Selection Logic</div>
+                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
+                                            Neural engine auto-selected RSI & MACD. High-conviction signals prioritized to maximize chart clarity and capture momentum breakouts.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl flex flex-col justify-between">
+                                    <div>
+                                        <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Market Metadata</div>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-zinc-500">24H Velocity</span>
+                                                <span className={selectedToken.consensus.color}>{selectedToken.change}%</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-zinc-500">Live Quote</span>
+                                                <span className="text-zinc-100">$ {selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-zinc-500">Net Liquidity</span>
+                                                <span className="text-zinc-100">${(selectedToken.liq || 0).toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 p-3 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                                        <div className="text-[8px] text-blue-400 font-black uppercase tracking-widest mb-1">Analyst Note</div>
+                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">
+                                            {selectedToken.change > 10 ? "Parabolic velocity detected. Watch for liquidity exhaustion." : "Horizontal compression active. Breakout probability remains high."}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
