@@ -459,19 +459,25 @@ export default function Dashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
-                                        {data.history && data.history.map((t, idx) => (
+                                        {data.history && data.history.length > 0 ? data.history.map((t, idx) => (
                                             <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
-                                                <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.timestamp || t.ts}</td>
-                                                <td className="px-6 py-4 font-black italic text-sm tracking-tight text-white">{t.symbol || t.id}</td>
+                                                <td className="px-6 py-4 font-mono text-[10px] text-zinc-400 font-bold">{t.timestamp || t.ts || 'N/A'}</td>
+                                                <td className="px-6 py-4 font-black italic text-sm tracking-tight text-white">{t.symbol || t.id || 'N/A'}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                                                        {t.side}
+                                                        {t.side || 'N/A'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${(t.price || 0).toFixed(2)}</td>
-                                                <td className="px-6 py-4 font-mono text-[11px] text-white font-black text-right">${(t.amount_usd || t.usd || 0).toFixed(2)}</td>
+                                                <td className="px-6 py-4 font-mono text-[11px] text-zinc-400 font-bold">${(parseFloat(t.price) || 0).toFixed(4)}</td>
+                                                <td className="px-6 py-4 font-mono text-[11px] text-white font-black text-right">${(parseFloat(t.amount_usd || t.usd) || 0).toFixed(2)}</td>
                                             </tr>
-                                        ))}
+                                        )) : (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
+                                                    No neural operation logs found in ledger
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
