@@ -4,15 +4,15 @@
     "symbol": "BANKR",
     "side": "BUY",
     "price": 0.00118,
-    "amount_usd": 400.00,
+    "amount_usd": 400.0,
     "logic": "Initial V1 Deployment: Base-layer memetics allocation."
   },
   {
     "timestamp": "2026-02-28 10:15:00 PST",
     "symbol": "XMR",
     "side": "BUY",
-    "price": 165.20,
-    "amount_usd": 500.00,
+    "price": 165.2,
+    "amount_usd": 500.0,
     "logic": "Initial V1 Deployment: Privacy-proxied volatility hedge."
   },
   {
@@ -20,7 +20,7 @@
     "symbol": "BTC",
     "side": "BUY",
     "price": 68235.12,
-    "amount_usd": 3799.50,
+    "amount_usd": 3799.5,
     "logic": "Council Consensus: BULLISH. Breakout confirmed by Mooner/Quant."
   },
   {
@@ -36,7 +36,15 @@
     "symbol": "XMR",
     "side": "SELL",
     "price": 168.45,
-    "amount_usd": 512.10,
+    "amount_usd": 512.1,
     "logic": "Liquidation: Technical breakdown detected by The Quant."
+  },
+  {
+    "timestamp": "2026-03-02 09:57:42 PST",
+    "symbol": "BANKR",
+    "side": "BUY",
+    "price": 0.000549,
+    "amount_usd": 176.4735,
+    "logic": "Consensus Reached [BUY]. Mooner confirms breakout move. Deployment of 30% available capital."
   }
 ]
