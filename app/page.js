@@ -132,7 +132,7 @@ export default function Dashboard() {
                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20"><Target className="w-6 h-6 text-white" /></div>
                <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none">BULLSEYE 1.3</h1>
             </div>
-            <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50" /><span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase leading-none">Production Active</span></div>
+            <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50" /><span className="text-[9px] text-zinc-500 font-extrabold tracking-[0.4em] uppercase">Production Active</span></div>
           </div>
           <div className="grid grid-cols-2 gap-8 text-right">
             <div><div className="text-[10px] text-zinc-500 font-extrabold uppercase mb-1 opacity-60">Vault Value</div><div className="text-2xl font-black text-white tracking-tighter tabular-nums">${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}</div></div>
@@ -148,12 +148,14 @@ export default function Dashboard() {
                 </div>
                 <div className="glass rounded-[2rem] p-6 border-emerald-500/20 bg-emerald-500/[0.02]">
                     <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2 text-left"><h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic">Paper holdings</h2><div className="text-[10px] font-black text-zinc-600 tabular-nums">${data.balance_usd.toLocaleString()} Cash</div></div>
-                    <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide">{data.holdings.map(h => (
-                        <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-xl p-3">
-                            <div className="text-left leading-tight"><span className="font-extrabold text-sm text-zinc-100 uppercase block">{h.id}</span><span className="text-[8px] text-zinc-600 font-bold">{h.qty.toLocaleString()} qty</span></div>
-                            <div className="text-right"><div className="text-sm font-black text-white font-mono">$ {h.value.toLocaleString(undefined, {minimumFractionDigits:2})}</div><div className={`text-[8px] font-black ${parseFloat(h.profitVal) >= 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{parseFloat(h.profitVal) >= 0 ? '+' : ''}{h.profitVal} ({h.profitPct}%)</div></div>
-                        </div>
-                    ))}</div>
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide">
+                        {data.holdings.map(h => (
+                            <div key={h.id} className="flex justify-between items-center bg-white/[0.02] border border-white/5 rounded-xl p-3">
+                                <div className="text-left leading-tight"><span className="font-extrabold text-sm text-zinc-100 uppercase block">{h.id}</span><span className="text-[8px] text-zinc-600 font-bold">{h.qty.toLocaleString()} qty</span></div>
+                                <div className="text-right"><div className="text-sm font-black text-white font-mono">$ {h.value.toLocaleString(undefined, {minimumFractionDigits:2})}</div><div className={`text-[8px] font-black ${parseFloat(h.profitVal) >= 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{parseFloat(h.profitVal) >= 0 ? '+' : ''}{h.profitVal} ({h.profitPct}%)</div></div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -166,13 +168,13 @@ export default function Dashboard() {
                     <thead className="text-[8px] font-black text-zinc-600 uppercase"><tr><th className="px-4">Asset</th><th className="text-right">Quote</th><th className="text-right">Vel 24h</th><th className="text-right px-4">Consensus</th></tr></thead>
                     <tbody>{data.stats.map((s) => (
                         <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer">
-                            <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-all group-hover:bg-white/[0.08]"><div className="p-2 border border-white/5 rounded-lg bg-zinc-900 group-hover:text-blue-400 transition-colors"><Coins className="w-3.5 h-3.5" /></div><div className="text-left"><span className="font-black text-md block transition-colors group-hover:text-blue-400 leading-none">{s.id}</span><span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">{s.tier}</span></div></td>
+                            <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-all group-hover:bg-white/[0.08]"><div className="p-2 border border-white/5 rounded-lg bg-zinc-900 group-hover:text-blue-400 transition-colors"><Coins className="w-3.5 h-3.5" /></div><div className="text-left"><span className="font-black text-md block transition-colors group-hover:text-blue-400 leading-none">{s.id}</span><span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest leading-none">{s.tier}</span></div></td>
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-mono font-bold text-zinc-300 tabular-nums text-sm">${s.price > 1 ? s.price.toLocaleString(undefined, {minimumFractionDigits:2}) : s.price.toFixed(6)}</td>
                             <td className={`px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-black italic text-sm group-hover:bg-white/5 ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</td>
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right transition-all group-hover:bg-white/[0.08]">
                                 <div className={`text-[9px] font-black uppercase italic tracking-wider ${s.consensus.color}`}>{s.consensus.label}</div>
-                                <div className="flex justify-end gap-1 mt-1">{s.consensus.council.map((c, idx) => (
-                                    <div key={idx} className={`w-1 h-1 rounded-full ${c.vote === 'BUY' ? 'bg-emerald-500 shadow-sm' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'bg-rose-500 shadow-sm' : 'bg-zinc-700')}`} />
+                                <div className="flex justify-end gap-1.5 mt-1">{s.consensus.council.map((c, idx) => (
+                                    <div key={idx} className={`w-1.5 h-1.5 rounded-full shadow-inner ${c.vote === 'BUY' ? 'bg-emerald-500 shadow-emerald-500/50' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'bg-rose-500 shadow-rose-500/50' : 'bg-zinc-700')}`} />
                                 ))}</div>
                             </td>
                         </tr>
@@ -215,7 +217,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 scrollbar-hide">
                         <div className="lg:col-span-8 space-y-6">
-                            <div id="tradingview_chart" className="bg-black/40 border border-white/5 rounded-[2rem] h-[450px] w-full flex items-center justify-center font-black uppercase text-[10px] tracking-widest text-zinc-700 shadow-inner">LOADING_FEEDS...</div>
+                            <div id="tradingview_chart" className="bg-black/40 border border-white/5 rounded-[2rem] h-[450px] w-full flex items-center justify-center font-black uppercase text-[10px] tracking-widest text-zinc-700 shadow-inner shadow-black">LOADING_FEEDS...</div>
                             <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2.5rem] shadow-inner text-left">
                                 <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4"><div><div className="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] italic">Neural Analysis Framework</div></div><div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Live Quote</div><div className="text-sm font-black text-white font-mono">${selectedToken.price > 1 ? selectedToken.price.toLocaleString() : selectedToken.price.toFixed(6)}</div></div></div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
@@ -227,22 +229,20 @@ export default function Dashboard() {
                         </div>
                         <div className="lg:col-span-4 bg-white/[0.03] rounded-[2.5rem] p-6 border border-white/10 flex flex-col justify-between h-full space-y-6 text-left">
                             <div className="space-y-6">
-                                <div><div className="text-[9px] font-black text-zinc-500 uppercase italic mb-3">Council Verdict</div><div className={`text-4xl font-black italic tracking-tighter uppercase leading-none ${selectedToken.consensus.color}`}>{selectedToken.consensus.label}</div><div className="text-[10px] text-zinc-500 italic mt-3 font-medium uppercase border-l-2 border-blue-500/30 pl-4 leading-relaxed">{selectedToken.consensus.desc}</div></div>
+                                <div><div className="text-[9px] font-black text-zinc-500 uppercase italic mb-3">Council Verdict</div><div className={`text-4xl font-black italic tracking-tighter uppercase leading-none ${selectedToken.consensus.color}`}>{selectedToken.consensus.label}</div><div className="text-[10px] text-zinc-500 italic mt-3 font-medium border-l-2 border-blue-500/30 pl-4 leading-relaxed">{selectedToken.consensus.desc}</div></div>
                                 <div className="space-y-3">{selectedToken.consensus.council.map((c, idx) => (<div key={idx} className="p-4 rounded-3xl border border-white/5 bg-black/40"><div className="flex justify-between items-center mb-1"><span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">{c.agent}</span><span className={`text-[9px] font-black px-2 py-0.5 rounded border ${c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/20' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/20' : 'text-zinc-500')}`}>{c.vote}</span></div><p className="text-[10px] text-zinc-400 italic m-0 leading-tight">{c.logic}</p></div>))}</div>
-                                
-                                <div className="p-4 border border-blue-500/20 bg-blue-500/5 rounded-[2rem] space-y-3">
-                                    <div className="text-[9px] font-black text-blue-400 uppercase italic tracking-widest">Asset Ladder Tier: {selectedToken.tier}</div>
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 1 (33% Sell)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '5%' : selectedToken.id === 'BANKR' ? '20%' : '10%'} Growth</span></div>
-                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 2 (33% Sell)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '12%' : selectedToken.id === 'BANKR' ? '50%' : '25%'} Growth</span></div>
-                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Stop Loss (100%)</span><span className="text-rose-500 font-bold">-5% Drawdown</span></div>
+                                <div className="p-4 border border-blue-500/20 bg-blue-500/5 rounded-[2rem] space-y-2">
+                                    <div className="text-[9px] font-black text-blue-400 uppercase italic tracking-widest">Asset Tier: {selectedToken.tier}</div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 1 (33%)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '5%' : selectedToken.id === 'BANKR' ? '20%' : '10%'}</span></div>
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Rung 2 (33%)</span><span className="text-emerald-400 font-bold">+{selectedToken.id === 'BTC' ? '12%' : selectedToken.id === 'BANKR' ? '50%' : '25%'}</span></div>
+                                        <div className="flex justify-between items-center text-[10px]"><span className="text-zinc-500">Stop (100%)</span><span className="text-rose-500 font-bold">-5%</span></div>
                                     </div>
                                 </div>
-
-                                <div className="mt-6 pt-4 border-t border-white/5 space-y-3 text-left"><div className="text-[9px] font-black text-zinc-600 uppercase italic">Strategy Hub</div>
+                                <div className="mt-6 pt-4 border-t border-white/5 space-y-3">
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl text-left"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Max Slip</div><div className="text-[10px] text-zinc-300 font-mono">0.50%</div></div>
-                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl text-left"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Entry</div><div className="text-[10px] text-zinc-300 font-mono">{selectedToken.consensus.label.includes('STRONG') ? '25%' : '15%'}</div></div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1 leading-none">Max Slip</div><div className="text-[10px] text-zinc-300 font-mono">0.50%</div></div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1 leading-none">Entry</div><div className="text-[10px] text-zinc-300 font-mono">{selectedToken.consensus.label.includes('STRONG') ? '25%' : '15%'}</div></div>
                                     </div>
                                 </div>
                             </div>
