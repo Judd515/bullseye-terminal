@@ -538,6 +538,35 @@ export default function Dashboard() {
                                         </div>
                                     ))}
                                 </div>
+                                
+                                <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
+                                    <div className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] italic mb-2">Execution_Parameters</div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Max_Slippage</div>
+                                            <div className="text-[11px] text-zinc-300 font-mono">0.50%</div>
+                                        </div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Gas_Priority</div>
+                                            <div className="text-[11px] text-zinc-300 font-mono">Aggressive</div>
+                                        </div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Entry_Tier</div>
+                                            <div className="text-[11px] text-zinc-300 font-mono">{selectedToken.consensus.label.includes('STRONG') ? '25% (3/3)' : '15% (2/3)'}</div>
+                                        </div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Exit_Ladder</div>
+                                            <div className="text-[11px] text-zinc-300 font-mono">3-Rung (Active)</div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-2xl">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                                            <span className="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Safety_Protocol_V1</span>
+                                        </div>
+                                        <p className="text-[10px] text-zinc-500 italic leading-tight m-0">Protecting liquid cash floor of $500. All trades require 2/3 consensus minimum.</p>
+                                    </div>
+                                </div>
                             </div>
                             
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 hover:bg-blue-500 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 transition-all text-white no-underline mt-10 block uppercase">Explore Raw Pool Feed</a>
