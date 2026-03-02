@@ -120,7 +120,14 @@ export default function Dashboard() {
           const script = document.createElement('script');
           script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
           script.async = true;
-          const symbolMap = {'BANKR':'MEXC:BANKRUSDT','CLANKER':'GATEIO:CLANKERUSDT','DEGEN':'COINBASE:DEGENUSD','BTC':'BINANCE:BTCUSDT','ETH':'BINANCE:ETHUSDT','XMR':'KRAKEN:XMRUSD'};
+          const symbolMap = {
+            'BANKR': 'UNISWAP:BANKR_22AF33.USD',
+            'CLANKER': 'UNISWAP:CLANKER_1BC0C4.USD',
+            'DEGEN': 'COINBASE:DEGENUSD',
+            'BTC': 'BINANCE:BTCUSDT',
+            'ETH': 'BINANCE:ETHUSDT',
+            'XMR': 'KRAKEN:XMRUSD'
+          };
           script.innerHTML = JSON.stringify({"autosize":true,"symbol":symbolMap[selectedToken.id] || selectedToken.id,"interval":"15","timezone":"Etc/UTC","theme":"dark","style":"1","locale":"en","allow_symbol_change":true,"calendar":false,"support_host":"https://www.tradingview.com","studies":["RSI@tv-basicstudies","MACD@tv-basicstudies"]});
           widgetContainer.appendChild(script);
       }
