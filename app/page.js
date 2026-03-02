@@ -24,13 +24,15 @@ export default function Dashboard() {
         
         const fetchToken = async (t) => {
             try {
-                let price = 0, change = 0;
+                let price = 0, change = 0, liq = 0, h1_vol = 0;
                 if (t.addr) {
                     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
                     const json = await res.json();
                     const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
                     price = p ? parseFloat(p.priceUsd) : 0;
                     change = p ? p.priceChange.h24 : 0;
+                    liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
+                    h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
                 } else if (t.cgId) {
                     const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cgId}&vs_currencies=usd&include_24hr_change=true`);
                     const json = await res.json();
@@ -41,9 +43,11 @@ export default function Dashboard() {
                   ...t,
                   price, 
                   change: parseFloat((change || 0).toFixed(2)),
+                  liq,
+                  h1_vol,
                   isFC: ['DEGEN', 'CLANKER'].includes(t.id)
                 };
-            } catch { return { ...t, price: 0, change: 0 } ; }
+            } catch { return { ...t, price: 0, change: 0, liq: 0, h1_vol: 0 } ; }
         };
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
@@ -67,36 +71,61 @@ export default function Dashboard() {
         const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
         const totalPnl = (((totalEquity - 5000) / 5000) * 100).toFixed(2);
 
-        const getConsensus = (token) => {
+        // Initialize Council Debate Logic
+        const getCouncilData = (token, wallet) => {
             const change = token.change;
-            const isDegen = token.id === 'DEGEN';
+            const liq = token.liq || 50000; 
+            const vol = token.h1_vol || 10000;
             
-            // Mocking the Council Debate Logic from council_logic.py
-            const bear = change > 15 ? { vote: 'REJECT', logic: 'Price overextended. Bull trap imminent.' } : { vote: 'NEUTRAL', logic: 'Risk parameters acceptable.' };
-            const mooner = change > 5 ? { vote: 'BUY', logic: 'Momentum breakout! Riding the heat.' } : { vote: 'NEUTRAL', logic: 'Volume profile is suboptimal.' };
-            const quant = change > 3 ? { vote: 'BUY', logic: 'Positive drift confirmed. Statistical alpha high.' } : (change < -5 ? { vote: 'SELL', logic: 'Technical breakdown. Failed trend.' } : { vote: 'HOLD', logic: 'Within standard deviation.' });
+            const council = [];
+
+            // THE BEAR
+            if (liq < 50000) {
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin. High slippage.` });
+            } else if (change > 15) {
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). High bull trap probability.` });
+            } else {
+                council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Risk parameters within standard range.' });
+            }
+
+            // THE MOONER
+            if (change > 5 && vol > (liq * 0.1)) {
+                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq ratio is ${(vol/liq).toFixed(2)}.` });
+            } else {
+                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Momentum not yet confirmed by volume spikes.' });
+            }
+
+            // THE QUANT
+            if (change > 3 && vol > 10000) {
+                council.push({ agent: 'The Quant', vote: 'BUY', logic: `Positive drift. 1h relative volume spikes confirm trend.` });
+            } else if (change < -5) {
+                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown. Momentum failure detected.' });
+            } else {
+                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations. No sig move.' });
+            }
+
+            return council;
+        };
+
+        const getConsensus = (token, wallet) => {
+            const council = getCouncilData(token, wallet);
+            const buys = council.filter(v => v.vote === 'BUY').length;
+            const sells = council.filter(v => v.vote === 'SELL').length;
 
             let label = 'MONITOR';
             let color = 'text-zinc-500';
             let desc = "Horizontal liquidity compression identified.";
 
-            if (change > 10) { label = 'ACCUMULATE+'; color = 'text-emerald-400'; desc = "Parabolic velocity detected."; }
-            else if (change > 5) { label = 'ACCUMULATE'; color = 'text-emerald-500'; desc = "Bullish breakout confirmed."; }
-            else if (change < -10) { label = 'LIQUIDATE'; color = 'text-rose-600'; desc = "Deep distribution detected."; }
+            if (buys >= 2) { label = 'ACCUMULATE'; color = 'text-emerald-500'; desc = "Council consensus: Bullish momentum confirmed."; }
+            else if (sells >= 2) { label = 'LIQUIDATE'; color = 'text-rose-600'; desc = "Council consensus: Distribution/Trend failure."; }
+            else if (token.change > 10) { label = 'ACCUMULATE+'; color = 'text-emerald-400'; desc = "Parabolic velocity trace active."; }
 
-            return { 
-                label, color, desc,
-                council: [
-                    { agent: 'The Bear', ...bear },
-                    { agent: 'The Mooner', ...mooner },
-                    { agent: 'The Quant', ...quant }
-                ]
-            };
+            return { label, color, desc, council };
         };
 
         const enhancedStats = resultStats.map(s => ({
             ...s,
-            consensus: getConsensus(s)
+            consensus: getConsensus(s, wallet)
         }));
 
         setData({ 
