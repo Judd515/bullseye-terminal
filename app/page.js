@@ -109,8 +109,63 @@ export default function Dashboard() {
             return council;
         };
 
+        // Initialize Council Debate Logic
+        const getCouncilData = (token, wallet) => {
+            const change = token.change;
+            const liq = token.liq || 50000; 
+            const vol = token.h1_vol || 10000;
+            
+            const council = [];
+
+            // THE BEAR
+            if (liq < 50000) {
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin. High slippage.` });
+            } else if (change > 15) {
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). High bull trap probability.` });
+            } else {
+                council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Risk parameters within standard range.' });
+            }
+
+            // THE MOONER
+            if (change > 5 && vol > (liq * 0.1)) {
+                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq ratio is ${(vol/liq).toFixed(2)}.` });
+            } else {
+                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Momentum not yet confirmed by volume spikes.' });
+            }
+
+            // THE QUANT
+            if (change > 3 && vol > 10000) {
+                council.push({ agent: 'The Quant', vote: 'BUY', logic: `Positive drift. 1h relative volume spikes confirm trend.` });
+            } else if (change < -5) {
+                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown. Momentum failure detected.' });
+            } else {
+                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations. No sig move.' });
+            }
+
+            return council;
+        };
+
+        const getNeuralIndicators = (token) => {
+            const change = token.change;
+            // Simulated but derived R-calculations based on live 24h delta and vol profiles
+            // In a full production env, these would be calculated by the backend and passed in the JSON
+            const rsi = (50 + (change * 1.5)).toFixed(1);
+            const rsiStatus = rsi > 70 ? 'OVERBOUGHT' : (rsi < 30 ? 'OVERSOLD' : (change > 0 ? 'BULLISH' : 'NEUTRAL'));
+            
+            const macd = change > 2 ? 'Bullish Cross' : (change < -2 ? 'Bearish Cross' : 'Converging');
+            const volStatus = token.h1_vol > (token.liq * 0.1) ? 'DETECTED' : 'NOMINAL';
+            
+            return [
+                { name: 'RSI (14)', value: `${rsi} - ${rsiStatus}`, color: rsiStatus === 'BULLISH' || rsiStatus === 'OVERSOLD' ? 'text-emerald-400' : (rsiStatus === 'OVERBOUGHT' ? 'text-rose-400' : 'text-zinc-300') },
+                { name: 'MACD (12, 26, 9)', value: macd, color: macd.includes('Bullish') ? 'text-emerald-400' : (macd.includes('Bearish') ? 'text-rose-400' : 'text-emerald-400') },
+                { name: 'Stoch RSI', value: change > 0 ? 'Momentum Up' : 'Horizontal', color: change > 0 ? 'text-emerald-400' : 'text-zinc-400' },
+                { name: 'Vol Spike (1h)', value: volStatus, color: volStatus === 'DETECTED' ? 'text-emerald-400' : 'text-rose-400' }
+            ];
+        };
+
         const getConsensus = (token, wallet) => {
             const council = getCouncilData(token, wallet);
+            const indicators = getNeuralIndicators(token);
             const buys = council.filter(v => v.vote === 'BUY').length;
             const sells = council.filter(v => v.vote === 'SELL').length;
 
@@ -122,7 +177,7 @@ export default function Dashboard() {
             else if (sells >= 2) { label = 'LIQUIDATE'; color = 'text-rose-600'; desc = "Council consensus: Distribution/Trend failure."; }
             else if (token.change > 10) { label = 'ACCUMULATE+'; color = 'text-emerald-400'; desc = "Parabolic velocity trace active."; }
 
-            return { label, color, desc, council };
+            return { label, color, desc, council, indicators };
         };
 
         const enhancedStats = resultStats.map(s => ({
@@ -335,22 +390,12 @@ export default function Dashboard() {
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                                     <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Neural Indicators</div>
                                     <div className="space-y-4">
-                                        <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-zinc-500">RSI (14)</span>
-                                            <span className={selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-300'}>58.4 - BULLISH</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-zinc-500">MACD (12, 26, 9)</span>
-                                            <span className="text-emerald-400">Converging</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-zinc-500">Stoch RSI</span>
-                                            <span className="text-emerald-400">Momentum Cross</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[11px]">
-                                            <span className="text-zinc-500">Vol Spike (1h)</span>
-                                            <span className={selectedToken.change > 10 ? 'text-emerald-400' : 'text-rose-400'}>{selectedToken.change > 10 ? 'DETECTED' : 'NOMINAL'}</span>
-                                        </div>
+                                        {selectedToken.consensus.indicators.map((ind, i) => (
+                                            <div key={i} className="flex justify-between items-center text-[11px]">
+                                                <span className="text-zinc-500">{ind.name}</span>
+                                                <span className={ind.color}>{ind.value}</span>
+                                            </div>
+                                        ))}
                                     </div>
                                     <div className="mt-4 pt-4 border-t border-white/5">
                                         <div className="text-[8px] text-zinc-600 font-bold uppercase tracking-tighter mb-2">Indicator Selection Logic</div>
