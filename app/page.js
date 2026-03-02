@@ -54,7 +54,6 @@ export default function Dashboard() {
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
         
-        // Fetch Live App Data from GitHub 
         const appDataRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/paper_wallet.json?cb=' + Date.now());
         const wallet = await appDataRes.json();
         const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
@@ -111,11 +110,18 @@ export default function Dashboard() {
         const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
             const token = resultStats.find(s => s.id === id);
             const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
-            const lastBuy = historyArray.find(t => t.symbol === id && t.side === 'BUY');
-            const entryPrice = lastBuy ? lastBuy.price : (token?.price || 0);
-            const profitVal = (parseFloat(value) - (parseFloat(qty) * entryPrice)).toFixed(2);
-            const profitPct = (((token?.price || 0) - entryPrice) / entryPrice * 100).toFixed(2);
-            return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal, profitPct };
+            const relevantTrades = historyArray.filter(t => t.symbol === id);
+            let entryPrice = 0;
+            if (relevantTrades.length > 0) {
+                const lastSellIdx = [...relevantTrades].reverse().findIndex(t => t.side === 'SELL');
+                const lastPosTrades = lastSellIdx === -1 ? relevantTrades : relevantTrades.slice(relevantTrades.length - lastSellIdx);
+                const lastBuy = lastPosTrades.find(t => t.side === 'BUY');
+                if (lastBuy) entryPrice = lastBuy.price;
+            }
+            const currentPrice = token?.price || 0;
+            const profitVal = lastBuy ? (parseFloat(value) - (parseFloat(qty) * entryPrice)).toFixed(2) : "0.00";
+            const profitPct = entryPrice > 0 ? ((currentPrice - entryPrice) / entryPrice * 100).toFixed(2) : "0.00";
+            return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal, profitPct, entryPrice };
         });
 
         setData({ 
@@ -148,7 +154,7 @@ export default function Dashboard() {
     }
   }, [selectedToken]);
 
-  if (!data) return <div className="min-h-screen bg-[#020203] flex items-center justify-center text-blue-500 font-black animate-pulse">SYNCING_PRO_FEED...</div>;
+  if (!data) return <div className="min-h-screen bg-[#020203] flex items-center justify-center text-blue-500 font-black animate-pulse">LOCKED_SYNC...</div>;
 
   return (
     <div className="min-h-screen bg-[#020203] text-[#f4f4f5] font-sans p-4 md:p-12 relative overflow-x-hidden">
@@ -195,10 +201,20 @@ export default function Dashboard() {
                     <thead className="text-[9px] font-black text-zinc-600 uppercase"><tr><th>Asset</th><th className="text-right">Quote</th><th className="text-right">Vel (24h)</th><th className="text-right">Consensus</th></tr></thead>
                     <tbody>{data.stats.map((s) => (
                         <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer">
-                            <td className="px-6 py-6 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3"><Coins className="w-4 h-4 text-zinc-500" /><span className="font-black text-lg block transition-colors group-hover:text-blue-400">{s.id}</span></td>
+                            <td className="px-6 py-6 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-colors group-hover:bg-white/[0.1]"><Coins className="w-4 h-4 text-zinc-500" /><span className="font-black text-lg block transition-colors group-hover:text-blue-400">{s.id}</span></td>
                             <td className="px-6 py-6 bg-white/[0.03] border-y border-white/5 text-right font-mono font-bold text-zinc-300 tabular-nums">${s.price > 1 ? s.price.toLocaleString(undefined, {minimumFractionDigits:2}) : s.price.toFixed(6)}</td>
                             <td className={`px-6 py-6 bg-white/[0.03] border-y border-white/5 text-right font-black italic ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</td>
-                            <td className="px-6 py-6 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right"><div className={`text-[10px] font-black uppercase italic ${s.consensus.color}`}>{s.consensus.label}</div></td>
+                            <td className="px-6 py-6 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right transition-colors group-hover:bg-white/[0.1]">
+                                <div className={`text-[10px] font-black uppercase italic tracking-widest ${s.consensus.color}`}>{s.consensus.label}</div>
+                                <div className="flex justify-end gap-1.5 mt-2">
+                                    {s.consensus.council.map((c, idx) => (
+                                        <div key={idx} className={`w-1.5 h-1.5 rounded-full shadow-inner ${
+                                            c.vote === 'BUY' ? 'bg-emerald-500 shadow-emerald-500/50' : 
+                                            (c.vote === 'SELL' || c.vote === 'REJECT' ? 'bg-rose-500 shadow-rose-500/50' : 'bg-zinc-700')
+                                        }`} title={`${c.agent}: ${c.vote}`} />
+                                    ))}
+                                </div>
+                            </td>
                         </tr>
                     ))}</tbody>
                 </table></div>
@@ -255,7 +271,9 @@ export default function Dashboard() {
                         </div>
                         <div className="lg:col-span-4 bg-white/[0.03] rounded-[2.5rem] p-8 border border-white/10 flex flex-col justify-between h-full space-y-8">
                             <div><div className="text-[9px] font-black text-zinc-500 uppercase italic mb-4">Council_Verdict</div><div className={`text-5xl font-black italic tracking-tighter uppercase leading-none ${selectedToken.consensus.color}`}>{selectedToken.consensus.label}</div><div className="text-[11px] text-zinc-500 italic mt-4 font-medium uppercase border-l-2 border-blue-500/30 pl-4">{selectedToken.consensus.desc}</div></div>
-                            <div className="space-y-4">{selectedToken.consensus.council.map((c, i) => (<div key={i} className="p-5 rounded-3xl border border-white/5 bg-black/40"><div className="flex justify-between items-center mb-2"><span className="text-[10px] font-black uppercase text-zinc-500">{c.agent}</span><span className={`text-[10px] font-black px-2 py-0.5 rounded border ${c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/20' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/20' : 'text-zinc-500')}`}>{c.vote}</span></div><p className="text-[11px] text-zinc-400 italic m-0">{c.logic}</p></div>))}</div>
+                            <div className="space-y-4">{selectedToken.consensus.council.map((c, i) => (
+                                <div key={i} className="p-5 rounded-3xl border border-white/5 bg-black/40"><div className="flex justify-between items-center mb-2"><span className="text-[10px] font-black uppercase text-zinc-500">{c.agent}</span><span className={`text-[10px] font-black px-2 py-0.5 rounded border ${c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/20' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/20' : 'text-zinc-500')}`}>{c.vote}</span></div><p className="text-[11px] text-zinc-400 italic m-0">{c.logic}</p></div>
+                            ))}</div>
                             <div className="mt-8 pt-6 border-t border-white/5 space-y-4 text-left"><div className="text-[9px] font-black text-zinc-600 uppercase italic">Strategy_Hub</div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl text-left"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Max_Slip</div><div className="text-[11px] text-zinc-300 font-mono">0.50%</div></div>
@@ -270,7 +288,7 @@ export default function Dashboard() {
             </div>
         )}
 
-        <footer className="pt-20 pb-12 opacity-30 text-left"><div className="text-[9px] font-black tracking-[0.4em] text-zinc-700 uppercase italic mb-2">TrashPanda Neural Ops • v1.3.0_PRO</div><p className="text-[8px] text-zinc-800 font-bold uppercase tracking-widest">Encrypted Production Stream • Sovereign Liquidity Engine • Zero-Trust Consensus</p></footer>
+        <footer className="pt-20 pb-12 opacity-30 text-left"><div className="text-[9px] font-black tracking-[0.4em] text-zinc-700 uppercase italic mb-2">TrashPanda Neural Ops • v1.3.0_PRO</div><p className="text-[8px] text-zinc-800 font-bold uppercase tracking-widest text-left">Encrypted Production Stream • Sovereign Liquidity Engine • Zero-Trust Consensus</p></footer>
       </div>
       <style jsx global>{`.glass { background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); } .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%); }`}</style>
     </div>
