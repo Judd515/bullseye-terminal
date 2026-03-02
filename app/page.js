@@ -63,95 +63,40 @@ export default function Dashboard() {
         
         const historyArray = Array.isArray(rawHistory) ? rawHistory : (rawHistory && typeof rawHistory === 'object' ? Object.values(rawHistory) : []);
 
-        // Calculate Holdings Value
-        const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
-            const token = resultStats.find(s => s.id === id);
-            const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
-            return { id, qty: parseFloat(qty).toFixed(4), value, pnl: "Live" };
-        });
-
-        const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
-        const totalPnl = (((totalEquity - 5000) / 5000) * 100).toFixed(2);
-
-        // Initialize Council Debate Logic
-        const getCouncilData = (token, wallet) => {
+        const getCouncilData = (token) => {
             const change = token.change;
             const liq = token.liq || 50000; 
             const vol = token.h1_vol || 10000;
-            
             const council = [];
 
-            // THE BEAR
             if (liq < 50000) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin. High slippage.` });
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin.` });
             } else if (change > 15) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). High bull trap probability.` });
+                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). Bull trap risk.` });
             } else {
                 council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Risk parameters within standard range.' });
             }
 
-            // THE MOONER
             if (change > 5 && vol > (liq * 0.1)) {
-                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq ratio is ${(vol/liq).toFixed(2)}.` });
+                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq is ${(vol/liq).toFixed(2)}.` });
             } else {
-                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Momentum not yet confirmed by volume spikes.' });
+                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Volume profile suboptimal.' });
             }
 
-            // THE QUANT
             if (change > 3 && vol > 10000) {
                 council.push({ agent: 'The Quant', vote: 'BUY', logic: `Positive drift. 1h relative volume spikes confirm trend.` });
             } else if (change < -5) {
-                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown. Momentum failure detected.' });
+                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown detected.' });
             } else {
-                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations. No sig move.' });
+                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations.' });
             }
-
-            return council;
-        };
-
-        // Initialize Council Debate Logic
-        const getCouncilData = (token, wallet) => {
-            const change = token.change;
-            const liq = token.liq || 50000; 
-            const vol = token.h1_vol || 10000;
-            
-            const council = [];
-
-            // THE BEAR
-            if (liq < 50000) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Liquidity ($${Math.round(liq).toLocaleString()}) too thin. High slippage.` });
-            } else if (change > 15) {
-                council.push({ agent: 'The Bear', vote: 'REJECT', logic: `Price overextended (+${change}%). High bull trap probability.` });
-            } else {
-                council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Risk parameters within standard range.' });
-            }
-
-            // THE MOONER
-            if (change > 5 && vol > (liq * 0.1)) {
-                council.push({ agent: 'The Mooner', vote: 'BUY', logic: `Momentum breakout! Vol-to-Liq ratio is ${(vol/liq).toFixed(2)}.` });
-            } else {
-                council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Momentum not yet confirmed by volume spikes.' });
-            }
-
-            // THE QUANT
-            if (change > 3 && vol > 10000) {
-                council.push({ agent: 'The Quant', vote: 'BUY', logic: `Positive drift. 1h relative volume spikes confirm trend.` });
-            } else if (change < -5) {
-                council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Technical breakdown. Momentum failure detected.' });
-            } else {
-                council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Within standard deviations. No sig move.' });
-            }
-
             return council;
         };
 
         const getNeuralIndicators = (token) => {
             const change = token.change;
-            // Simulated but derived R-calculations based on live 24h delta and vol profiles
-            // In a full production env, these would be calculated by the backend and passed in the JSON
             const rsi = (50 + (change * 1.5)).toFixed(1);
             const rsiStatus = rsi > 70 ? 'OVERBOUGHT' : (rsi < 30 ? 'OVERSOLD' : (change > 0 ? 'BULLISH' : 'NEUTRAL'));
-            
             const macd = change > 2 ? 'Bullish Cross' : (change < -2 ? 'Bearish Cross' : 'Converging');
             const volStatus = token.h1_vol > (token.liq * 0.1) ? 'DETECTED' : 'NOMINAL';
             
@@ -163,8 +108,8 @@ export default function Dashboard() {
             ];
         };
 
-        const getConsensus = (token, wallet) => {
-            const council = getCouncilData(token, wallet);
+        const getConsensus = (token) => {
+            const council = getCouncilData(token);
             const indicators = getNeuralIndicators(token);
             const buys = council.filter(v => v.vote === 'BUY').length;
             const sells = council.filter(v => v.vote === 'SELL').length;
@@ -180,9 +125,19 @@ export default function Dashboard() {
             return { label, color, desc, council, indicators };
         };
 
+        // Calculate Holdings Value
+        const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
+            const token = resultStats.find(s => s.id === id);
+            const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
+            return { id, qty: parseFloat(qty).toFixed(4), value, pnl: "Live" };
+        });
+
+        const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
+        const totalPnl = (((totalEquity - 5000) / 5000) * 100).toFixed(2);
+
         const enhancedStats = resultStats.map(s => ({
             ...s,
-            consensus: getConsensus(s, wallet)
+            consensus: getConsensus(s)
         }));
 
         setData({ 
@@ -254,7 +209,6 @@ export default function Dashboard() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/5 blur-[150px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
-        
         <header className="glass rounded-[2.5rem] p-8 md:p-10 bg-white/[0.01] border-white/[0.08] backdrop-blur-2xl flex flex-col md:flex-row justify-between items-start md:items-end gap-6 shadow-2xl">
           <div className="space-y-4 text-left">
             <div className="flex items-center gap-4">
@@ -435,10 +389,10 @@ export default function Dashboard() {
                                                          (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-500/50' : 
                                                          'text-amber-500/50');
                                         return (
-                                            <div key={i} className={`p-4 rounded-2xl border $\{voteColor.split(' ').slice(1,2).join(' ')} bg-black/40`}>
+                                            <div key={i} className={`p-4 rounded-2xl border ${voteColor.split(' ').slice(1,2).join(' ')} bg-black/40`}>
                                                 <div className="flex justify-between items-center mb-2">
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest $\{agentColor}`}>{c.agent}</span>
-                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded border $\{voteColor}`}>
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${agentColor}`}>{c.agent}</span>
+                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${voteColor}`}>
                                                         {c.vote}
                                                     </span>
                                                 </div>
@@ -536,7 +490,7 @@ export default function Dashboard() {
                                             );
                                         }) : (
                                             <tr>
-                                                <td colSpan="5" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
+                                                <td colSpan="6" className="px-6 py-12 text-center text-[10px] font-bold text-zinc-700 uppercase tracking-widest italic">
                                                     No neural operation logs found in ledger
                                                 </td>
                                             </tr>
