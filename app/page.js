@@ -68,10 +68,30 @@ export default function Dashboard() {
         const totalPnl = (((totalEquity - 5000) / 5000) * 100).toFixed(2);
 
         const getConsensus = (token) => {
-            if (token.change > 10) return { label: 'ACCUMULATE+', color: 'text-emerald-400', desc: "Parabolic velocity detected. Momentum model suggests trend continuation." };
-            if (token.change > 5) return { label: 'ACCUMULATE', color: 'text-emerald-500', desc: "Bullish breakout confirmed. Technical indicators aligning for further upside." };
-            if (token.change < -10) return { label: 'LIQUIDATE', color: 'text-rose-600', desc: "Deep distribution detected. Trend breakdown imminent." };
-            return { label: 'MONITOR', color: 'text-zinc-500', desc: "Horizontal liquidity compression identified. Posture: Neutral." };
+            const change = token.change;
+            const isDegen = token.id === 'DEGEN';
+            
+            // Mocking the Council Debate Logic from council_logic.py
+            const bear = change > 15 ? { vote: 'REJECT', logic: 'Price overextended. Bull trap imminent.' } : { vote: 'NEUTRAL', logic: 'Risk parameters acceptable.' };
+            const mooner = change > 5 ? { vote: 'BUY', logic: 'Momentum breakout! Riding the heat.' } : { vote: 'NEUTRAL', logic: 'Volume profile is suboptimal.' };
+            const quant = change > 3 ? { vote: 'BUY', logic: 'Positive drift confirmed. Statistical alpha high.' } : (change < -5 ? { vote: 'SELL', logic: 'Technical breakdown. Failed trend.' } : { vote: 'HOLD', logic: 'Within standard deviation.' });
+
+            let label = 'MONITOR';
+            let color = 'text-zinc-500';
+            let desc = "Horizontal liquidity compression identified.";
+
+            if (change > 10) { label = 'ACCUMULATE+'; color = 'text-emerald-400'; desc = "Parabolic velocity detected."; }
+            else if (change > 5) { label = 'ACCUMULATE'; color = 'text-emerald-500'; desc = "Bullish breakout confirmed."; }
+            else if (change < -10) { label = 'LIQUIDATE'; color = 'text-rose-600'; desc = "Deep distribution detected."; }
+
+            return { 
+                label, color, desc,
+                council: [
+                    { agent: 'The Bear', ...bear },
+                    { agent: 'The Mooner', ...mooner },
+                    { agent: 'The Quant', ...quant }
+                ]
+            };
         };
 
         const enhancedStats = resultStats.map(s => ({
@@ -273,27 +293,62 @@ export default function Dashboard() {
 
                     <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-6 text-left">
-                            <div id="tradingview_chart" className="bg-black/60 border border-white/5 rounded-[2rem] aspect-video w-full overflow-hidden shadow-inner flex items-center justify-center text-zinc-700 font-black uppercase tracking-[0.4em] text-[10px]">
+                            <div id="tradingview_chart" className="bg-black/60 border border-white/5 rounded-[2rem] aspect-video w-full overflow-hidden shadow-inner flex flex-col items-center justify-center text-zinc-700 font-black uppercase tracking-[0.4em] text-[10px]">
                                Initializing_Neural_Feed...
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Live Asset Quote</div>
-                                    <div className="text-xl font-black text-zinc-200 font-mono italic tabular-nums">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
+                                    <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Neural Indicators</div>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">RSI (14)</span>
+                                            <span className={selectedToken.change > 5 ? 'text-emerald-400' : 'text-zinc-300'}>58.4 - BULLISH</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">MACD (12, 26, 9)</span>
+                                            <span className="text-emerald-400">Converging</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">Vol Spike (1h)</span>
+                                            <span className={selectedToken.change > 10 ? 'text-emerald-400' : 'text-rose-400'}>{selectedToken.change > 10 ? 'DETECTED' : 'NOMINAL'}</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
-                                    <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">24H Velocity Trace</div>
-                                    <div className={`text-xl font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div>
+                                    <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-b border-white/5 pb-2 mb-4">Market Metadata</div>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">24H Velocity</span>
+                                            <span className={selectedToken.consensus.color}>{selectedToken.change}%</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[11px]">
+                                            <span className="text-zinc-500">Live Quote</span>
+                                            <span className="text-zinc-100">$ {selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-white/[0.03] rounded-[2.5rem] p-8 border border-white/10 flex flex-col justify-between h-full text-left">
-                            <div className="flex-1">
-                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-4 italic mb-6 leading-none underline underline-offset-8 decoration-blue-500/30">Neural_Consensus</div>
+                            <div className="flex-1 space-y-6">
+                                <div className="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic leading-none underline underline-offset-8 decoration-blue-500/30">Council_Consensus</div>
                                 <div className={`text-4xl font-black italic tracking-tighter uppercase mb-4 leading-none ${selectedToken.consensus.color}`}>
                                     {selectedToken.consensus.label}
                                 </div>
-                                <p className="text-sm font-medium leading-relaxed text-zinc-500 italic m-0">{selectedToken.consensus.desc}</p>
+                                
+                                <div className="space-y-4 mt-8">
+                                    {selectedToken.consensus.council.map((c, i) => (
+                                        <div key={i} className="bg-black/20 p-4 rounded-2xl border border-white/5">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{c.agent}</span>
+                                                <span className={`text-[10px] font-black px-2 py-0.5 rounded ${c.vote === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : (c.vote === 'SELL' ? 'bg-rose-500/10 text-rose-400' : 'bg-white/5 text-zinc-500')}`}>
+                                                    {c.vote}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-zinc-500 italic leading-snug m-0">{c.logic}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
                         </div>
