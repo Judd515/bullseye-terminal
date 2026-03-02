@@ -18,6 +18,7 @@ export default function Dashboard() {
         const tokens = [
             { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'] },
             { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'] },
+            { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD', 'BINANCE:XMRUSDT'] },
             { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD', 'KRAKEN:DEGENUSD', 'DEXSCREENER:DEGENUSD'] },
             { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['DEXSCREENER:0x1bc0c42215582d5a085795f4badbac3ff36d1bcb'] },
             { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['DEXSCREENER:0x22af33fe49fd1fa80c7149773dde5890d3c76f3b'] }
@@ -326,40 +327,40 @@ export default function Dashboard() {
                         <table className="w-full text-left border-separate border-spacing-0">
                             <thead className="bg-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-500">
                                 <tr>
-                                    <th className="px-6 py-4">Timestamp</th>
+                                    <th className="px-6 py-4">TS</th>
                                     <th className="px-6 py-4">Asset</th>
-                                    <th className="px-6 py-4">Side</th>
-                                    <th className="px-6 py-4">Qty</th>
-                                    <th className="px-6 py-4 text-right">Op Price</th>
-                                    <th className="px-6 py-4 text-right">Live Price</th>
-                                    <th className="px-6 py-4 text-right">Unrealized PnL</th>
+                                    <th className="px-6 py-4 text-center">Op</th>
+                                    <th className="px-6 py-4 text-right">Qty</th>
+                                    <th className="px-6 py-4 text-right">Entry</th>
+                                    <th className="px-6 py-4 text-right">Live</th>
+                                    <th className="px-6 py-4 text-right">uPnL</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {data.history.map((t, idx) => {
+                                {[...data.history].reverse().map((t, idx) => {
                                     const liveToken = data.stats.find(s => s.id === (t.symbol || t.id));
                                     const livePrice = liveToken ? liveToken.price : 0;
                                     const opPrice = parseFloat(t.price) || 0;
                                     const isBuy = t.side === 'BUY';
-                                    const unrealizedPct = opPrice > 0 ? (((livePrice - opPrice) / opPrice) * 100).toFixed(2) : "0.00";
+                                    const unrealizedPct = opPrice > 0 ? (((livePrice - opPrice) / opPrice) * 100).toFixed(1) : "0.0";
                                     const unrealizedUsd = t.qty ? ((livePrice - opPrice) * t.qty).toFixed(2) : "0.00";
                                     const isPositive = parseFloat(unrealizedPct) >= 0;
                                     const qty = t.qty || (t.amount_usd / t.price);
                                     return (
                                         <tr key={idx} className="hover:bg-white/[0.02] text-left">
-                                            <td className="px-6 py-4 font-mono text-[10px] text-zinc-500">{t.timestamp || t.ts || 'N/A'}</td>
+                                            <td className="px-6 py-4 font-mono text-[9px] text-zinc-500">{t.timestamp ? t.timestamp.split(' ')[1] : 'N/A'}</td>
                                             <td className="px-6 py-4 font-black italic text-sm text-white">{t.symbol || t.id || 'N/A'}</td>
-                                            <td><span className={`text-[9px] font-black px-2 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>{t.side}</span></td>
-                                            <td className="px-6 py-4 font-mono text-[11px] text-zinc-300">{qty.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
-                                            <td className="px-6 py-4 font-mono text-right text-zinc-400 text-sm whitespace-nowrap">${opPrice < 1 ? opPrice.toFixed(6) : opPrice.toLocaleString()}</td>
-                                            <td className="px-6 py-4 font-mono text-right text-blue-400 text-sm whitespace-nowrap">${livePrice < 1 ? livePrice.toFixed(6) : livePrice.toLocaleString()}</td>
+                                            <td className="text-center"><span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md ${t.side === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>{t.side === 'BUY' ? 'B' : 'S'}</span></td>
+                                            <td className="px-6 py-4 font-mono text-[10px] text-zinc-300 text-right">{qty > 9999 ? (qty/1000).toFixed(0)+'k' : qty.toFixed(1)}</td>
+                                            <td className="px-6 py-4 font-mono text-right text-zinc-400 text-[10px] whitespace-nowrap">${opPrice < 1 ? opPrice.toFixed(4) : opPrice.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                                            <td className="px-6 py-4 font-mono text-right text-blue-400 text-[10px] whitespace-nowrap">${livePrice < 1 ? livePrice.toFixed(4) : livePrice.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                                             <td className="px-6 py-4 font-mono text-right">
                                                 {isBuy ? (
-                                                    <div className="flex flex-col items-end">
+                                                    <div className="flex flex-col items-end leading-none">
                                                         <span className={isPositive ? 'text-emerald-400' : 'text-rose-500'}>{isPositive ? '+' : ''}{unrealizedPct}%</span>
-                                                        <span className="text-[9px] text-zinc-600 font-bold">{isPositive ? '+$' : '-$'}{Math.abs(unrealizedUsd)}</span>
+                                                        <span className="text-[8px] text-zinc-600 font-bold mt-0.5">${Math.abs(unrealizedUsd)}</span>
                                                     </div>
-                                                ) : <span className="text-zinc-700">Closed</span>}
+                                                ) : <span className="text-[9px] text-zinc-700 font-bold uppercase tracking-tighter">Settled</span>}
                                             </td>
                                         </tr>
                                     );
@@ -390,14 +391,10 @@ export default function Dashboard() {
                             <div id="tradingview_chart" className="bg-black/40 border border-white/5 rounded-[2rem] h-[500px] w-full overflow-hidden flex flex-col items-center justify-center text-zinc-700 font-black uppercase text-[10px] tracking-widest">Initializing_Neural_Feed...</div>
                             <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2.5rem] shadow-inner text-left">
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-white/5 pb-6">
-                                    <div>
-                                        <div className="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] mb-2 italic">Neural Analysis Framework</div>
-                                    </div>
+                                    <div className="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] italic">Neural Analysis Framework</div>
                                     <div className="flex gap-4">
-                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right">
-                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Live Quote</div>
-                                            <div className="text-sm font-black text-white font-mono">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div>
-                                        </div>
+                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">Live Quote</div><div className="text-sm font-black text-white font-mono">${selectedToken.price > 1 ? selectedToken.price.toLocaleString(undefined, {minimumFractionDigits: 2}) : selectedToken.price.toFixed(6)}</div></div>
+                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-right"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1">24H Velocity</div><div className={`text-sm font-black italic ${selectedToken.consensus.color}`}>{selectedToken.change}%</div></div>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -407,16 +404,11 @@ export default function Dashboard() {
                                     </div>
                                     <div className="space-y-6">
                                         <div className="group/edu"><div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider"><ShieldCheck className="w-3.5 h-3.5 text-rose-500" /> Liquidity & Vol</div><p className="text-[11px] text-zinc-500 italic leading-relaxed m-0 text-left">The Bear's domain. If depth is under $30k, or 1h Volume is {'>'}50% of the 24h total, the trade is immediately REJECTED.</p></div>
-                                        <div className="group/edu pt-4 border-t border-white/5"><div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider"><TrendingUp className="w-3.5 h-3.5 text-purple-400" /> Mooner Score</div><p className="text-[11px] text-zinc-500 italic leading-relaxed m-0 text-left">If liquidity falls while price rises, it signals a pump-and-dump exit rather than a sustainable breakout.</p></div>
+                                        <div className="group/edu pt-4 border-t border-white/5"><div className="text-[10px] text-zinc-100 font-bold flex items-center gap-2 mb-2 uppercase tracking-wider"><TrendingUp className="w-3.5 h-3.5 text-purple-400" /> Mooner Score</div><p className="text-[11px] text-zinc-500 italic leading-relaxed m-0 text-left">Healthy trends require rising liquidity. If liquidity falls while price rises, it signals a pull rather than a breakout.</p></div>
                                     </div>
                                     <div className="bg-blue-500/[0.03] border border-blue-500/10 rounded-3xl p-6 flex flex-col justify-between text-left">
-                                        <div className="space-y-4">
-                                            <div className="text-[9px] text-blue-400 font-black uppercase italic border-b border-blue-500/10 pb-2 tracking-widest">Analyst Intelligence Trace</div>
-                                            <p className="text-[12px] text-zinc-400 font-medium italic leading-relaxed mb-4">{selectedToken.change > 10 ? "Parabolic velocity detected. Watch for liquidity exhaustion." : "Horizontal compression active. Neural signature suggests high breakout probability."}</p>
-                                        </div>
-                                        <div className="pt-4 border-t border-blue-500/10">
-                                            <div className="flex justify-between items-center text-[10px] uppercase font-black"><span className="text-zinc-600">Net Liquidity</span><span className="text-zinc-200">${(selectedToken.liq || 0).toLocaleString()}</span></div>
-                                        </div>
+                                        <div className="space-y-4"><div className="text-[9px] text-blue-400 font-black uppercase italic border-b border-blue-500/10 pb-2 tracking-widest">Analyst Intelligence Trace</div><p className="text-[12px] text-zinc-400 font-medium italic leading-relaxed mb-4">{selectedToken.change > 10 ? "Parabolic velocity detected. Watch for liquidity exhaustion." : "Horizontal compression active. Neural signature suggests high breakout probability."}</p></div>
+                                        <div className="pt-4 border-t border-blue-500/10"><div className="flex justify-between items-center text-[10px] uppercase font-black"><span className="text-zinc-600">Net Liquidity</span><span className="text-zinc-200">${(selectedToken.liq || 0).toLocaleString()}</span></div></div>
                                     </div>
                                 </div>
                             </div>
