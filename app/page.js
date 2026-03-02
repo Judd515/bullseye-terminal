@@ -381,17 +381,25 @@ export default function Dashboard() {
                                 </div>
                                 
                                 <div className="space-y-4 mt-8">
-                                    {selectedToken.consensus.council.map((c, i) => (
-                                        <div key={i} className="bg-black/20 p-4 rounded-2xl border border-white/5">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{c.agent}</span>
-                                                <span className={`text-[10px] font-black px-2 py-0.5 rounded ${c.vote === 'BUY' ? 'bg-emerald-500/10 text-emerald-400' : (c.vote === 'SELL' ? 'bg-rose-500/10 text-rose-400' : 'bg-white/5 text-zinc-500')}`}>
-                                                    {c.vote}
-                                                </span>
+                                    {selectedToken.consensus.council.map((c, i) => {
+                                        const voteColor = c.vote === 'BUY' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 
+                                                        (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-400 border-rose-500/30 bg-rose-500/10' : 
+                                                        'text-amber-400 border-amber-500/30 bg-amber-500/10');
+                                        const agentColor = c.vote === 'BUY' ? 'text-emerald-500/50' : 
+                                                         (c.vote === 'SELL' || c.vote === 'REJECT' ? 'text-rose-500/50' : 
+                                                         'text-amber-500/50');
+                                        return (
+                                            <div key={i} className={`p-4 rounded-2xl border ${voteColor.split(' ').slice(1,2).join(' ')} bg-black/40`}>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${agentColor}`}>{c.agent}</span>
+                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${voteColor}`}>
+                                                        {c.vote}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-zinc-400 italic leading-snug m-0">{c.logic}</p>
                                             </div>
-                                            <p className="text-[11px] text-zinc-500 italic leading-snug m-0">{c.logic}</p>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                             <a href={`https://dexscreener.com/${selectedToken.chain || 'base'}/${selectedToken.addr || ''}`} target="_blank" className="w-full py-5 bg-blue-600 rounded-[2rem] text-center font-black italic text-sm tracking-tighter shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-white no-underline mt-10 block uppercase">View Raw Pair Pool</a>
