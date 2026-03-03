@@ -136,7 +136,7 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-2 gap-8 text-right">
             <div><div className="text-[10px] text-zinc-500 font-extrabold uppercase mb-1 opacity-60">Vault Value</div><div className="text-2xl font-black text-white tracking-tighter tabular-nums">${data.total.toLocaleString(undefined, {minimumFractionDigits:2})}</div></div>
-            <div><div className="text-[10px] text-zinc-500 font-extrabold uppercase mb-1 opacity-60">Yield Total</div><div className="text-2xl font-black text-emerald-400 tracking-tighter tabular-nums">{data.pnl}%</div></div>
+            <div><div className="text-[10px] text-zinc-500 font-extrabold uppercase mb-1 opacity-60">Yield Total</div><div className={`text-2xl font-black ${parseFloat(data.pnl) >= 0 ? 'text-emerald-400' : 'text-rose-500'} tracking-tighter tabular-nums`}>{data.pnl}%</div></div>
           </div>
         </header>
 
