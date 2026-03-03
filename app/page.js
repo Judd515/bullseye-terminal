@@ -210,7 +210,7 @@ export default function Dashboard() {
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right transition-all group-hover:bg-white/[0.08]">
                                 <div className={`text-[9px] font-black uppercase italic tracking-wider ${s.consensus.color}`}>{s.consensus.label}</div>
                                 <div className="flex justify-end gap-1.5 mt-1">{s.consensus.council.map((c, idx) => (
-                                    <div key={idx} className={`w-1.5 h-1.5 rounded-full shadow-inner ${c.vote === 'BUY' ? 'bg-emerald-500 shadow-emerald-500/50' : (c.vote === 'SELL' || c.vote === 'REJECT' ? 'bg-rose-500 shadow-rose-500/50' : 'bg-zinc-700')}`} />
+                                    <div key={idx} className={`w-1.5 h-1.5 rounded-full shadow-inner ${['BUY', 'CHASE', 'CONFIRM', 'APPROVE'].includes(c.vote) ? 'bg-emerald-500 shadow-emerald-500/50' : (['SELL', 'REJECT', 'VETO', 'NO EDGE'].includes(c.vote) ? 'bg-rose-500 shadow-rose-500/50' : 'bg-amber-400 shadow-amber-500/50')}`} />
                                 ))}</div>
                             </td>
                         </tr>
