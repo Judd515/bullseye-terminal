@@ -299,6 +299,7 @@ export default function Dashboard() {
                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Real-Time Data Feed</div>
                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">Sentinel Monitoring Active</div>
             </div>
+            <div className="mt-4"><a href="/about" className="text-[10px] font-black uppercase text-zinc-600 hover:text-blue-400 transition-colors no-underline border border-white/5 px-4 py-2 rounded-full">Protocol Intelligence Overview</a></div>
         </div></footer>
       </div>
       <style jsx global>{`.glass { background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); shadow: 0 10px 40px rgba(0,0,0,0.5); } .neo-gradient { background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%); } .scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
