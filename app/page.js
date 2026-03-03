@@ -16,7 +16,7 @@ export default function Dashboard() {
       try {
         const tokens = [
             { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'], tier: 'Anchor' },
-            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'], tier: 'Mid Tier' },
+            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'], tier: 'Anchor' },
             { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD'], tier: 'Mid Tier' },
             { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD'], tier: 'Mid Tier' },
             { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['COINBASE:CLANKERUSD'], tier: 'High Alpha' },
