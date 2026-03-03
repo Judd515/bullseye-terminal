@@ -89,23 +89,22 @@ export default function Dashboard() {
             const chase = council.filter(v => v.vote === 'CHASE').length;
             const vetos = council.filter(v => v.vote === 'VETO').length;
             const confirms = council.filter(v => v.vote === 'CONFIRM').length;
+            const approves = council.filter(v => v.vote === 'APPROVE').length;
 
             let label = 'MONITOR'; 
             let color = 'text-zinc-500'; 
             let desc = "Awaiting cross-agent alignment.";
 
+            const positiveVotes = chase + confirms + approves;
+
             if (vetos >= 1) {
                 label = 'VETOED'; 
                 color = 'text-rose-600'; 
-                desc = "Bear risk-abort active.";
-            } else if (chase >= 1 && confirms >= 1) {
-                label = 'STRONG BUY'; 
-                color = 'text-emerald-500'; 
-                desc = "Momentum and Quant alignment confirmed.";
-            } else if (chase >= 1 || confirms >= 1) {
+                desc = "Bear risk-abort active. Entry blocked.";
+            } else if (positiveVotes >= 2) {
                 label = 'ACCUMULATE'; 
                 color = 'text-emerald-400'; 
-                desc = "Partial alignment detected.";
+                desc = "Consensus reached (2/3). Awaiting breakout volatility trigger.";
             }
 
             return { label, color, desc, council };
