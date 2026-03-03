@@ -27,74 +27,122 @@ export default function About() {
           <p className="text-lg text-zinc-400 leading-relaxed font-medium">
             BullsEye is a high-frequency strategic terminal designed to bridge the gap between raw decentralized data and automated execution. It operates as a <span className="text-blue-400">multi-agent consensus engine</span>, where specialized AI delegates analyze market conditions in real-time to authorize capital deployment.
           </p>
+          <div className="bg-blue-600/[0.03] border border-blue-500/10 p-6 rounded-[2rem] space-y-4">
+             <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Protocol Mission</h4>
+             <p className="text-sm text-zinc-300 leading-relaxed m-0">The BullsEye protocol exists to eliminate emotional bias from high-alpha trading. By utilizing a "Council" of competing perspectives—Risk, Momentum, and Statistics—we ensure that capital is only committed when high-velocity price action is backed by deep liquidity and mathematical drift.</p>
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] space-y-4">
             <div className="w-8 h-8 bg-rose-500/10 rounded-lg flex items-center justify-center"><ShieldCheck className="w-5 h-5 text-rose-500" /></div>
             <h3 className="text-sm font-black uppercase tracking-widest italic text-white leading-none">The Bear</h3>
-            <p className="text-[11px] text-zinc-500 leading-relaxed">The risk manager. Analyzes liquidity depth, vertical overextension, and mean reversion risk. Its primary goal is capital preservation through <span className="text-rose-400">VETOs</span>.</p>
+            <p className="text-[11px] text-zinc-500 leading-relaxed">The risk manager. Analyzes liquidity depth, vertical overextension, and mean reversion risk.</p>
+            <div className="pt-4 border-t border-white/5 space-y-2">
+                <div className="text-[9px] font-bold text-rose-400 uppercase tracking-tighter italic">Primary Gate:</div>
+                <p className="text-[10px] text-zinc-400 m-0">VETOs any asset with &lt; $30k pool depth or 24h expansion &gt; 20% to prevent buying blow-off tops.</p>
+            </div>
           </div>
           <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] space-y-4">
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center"><TrendingUp className="w-5 h-5 text-emerald-500" /></div>
             <h3 className="text-sm font-black uppercase tracking-widest italic text-white leading-none">The Mooner</h3>
-            <p className="text-[11px] text-zinc-500 leading-relaxed">The momentum specialist. Monitors price velocity, RSI breakouts, and volume spikes. It only triggers a <span className="text-emerald-400">CHASE</span> when a trend shows high-intensity conviction.</p>
+            <p className="text-[11px] text-zinc-500 leading-relaxed">The momentum specialist. Monitors price velocity, RSI breakouts, and volume spikes.</p>
+            <div className="pt-4 border-t border-white/5 space-y-2">
+                <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter italic">Primary Gate:</div>
+                <p className="text-[10px] text-zinc-400 m-0">Requires 24h &gt; 3% for a Chase, and 1h Volume &gt; 10% of Liquidity for High-Alpha confirmation.</p>
+            </div>
           </div>
           <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] space-y-4">
             <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center"><Activity className="w-5 h-5 text-blue-500" /></div>
             <h3 className="text-sm font-black uppercase tracking-widest italic text-white leading-none">The Quant</h3>
-            <p className="text-[11px] text-zinc-500 leading-relaxed">The statistical analyst. Uses MACD crossovers and historical drift analysis to <span className="text-blue-400">CONFIRM</span> that a trend is mathematically sound rather than just noise.</p>
+            <p className="text-[11px] text-zinc-500 leading-relaxed">The statistical analyst. Uses MACD crossovers and historical drift analysis.</p>
+            <div className="pt-4 border-t border-white/5 space-y-2">
+                <div className="text-[9px] font-bold text-blue-400 uppercase tracking-tighter italic">Primary Gate:</div>
+                <p className="text-[10px] text-zinc-400 m-0">Triggers CONFIRM when MACD Signal Line crosses the Histogram with positive drift gradient.</p>
+            </div>
           </div>
         </div>
 
         <section className="space-y-8 bg-white/[0.01] border border-white/5 p-8 rounded-[2.5rem]">
           <h2 className="text-2xl font-black italic tracking-tighter uppercase text-center">Consensus Taxonomy</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-4">
-              <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Decision Logic (2/3)</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed">BullsEye requires a mathematical majority. No asset is traded unless at least two agents align on a positive outlook. However, a single <span className="text-rose-500">VETO</span> from The Bear can freeze execution even if 2/3 alignment is met.</p>
+              <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Decision States</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4 items-center">
+                    <span className="text-[10px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded w-24 text-center">CHASE</span>
+                    <span className="text-xs text-zinc-400 font-medium italic">High-velocity breakout in progress.</span>
+                </div>
+                <div className="flex gap-4 items-center">
+                    <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-1 rounded w-24 text-center">CONFIRM</span>
+                    <span className="text-xs text-zinc-400 font-medium italic">Statistical indicators align with trend.</span>
+                </div>
+                <div className="flex gap-4 items-center">
+                    <span className="text-[10px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-1 rounded w-24 text-center">WAIT / CAUTION</span>
+                    <span className="text-xs text-zinc-400 font-medium italic">Low volatility or risk threshold breach.</span>
+                </div>
+                <div className="flex gap-4 items-center">
+                    <span className="text-[10px] font-black bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-1 rounded w-24 text-center">VETO</span>
+                    <span className="text-xs text-zinc-400 font-medium italic">Total risk failure; entry blocked.</span>
+                </div>
+              </div>
             </div>
             <div className="space-y-4">
-              <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">The Breakout Trigger</h4>
+              <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Execution Methodology (2/3)</h4>
               <p className="text-xs text-zinc-400 leading-relaxed font-bold italic">"Consensus is the permission. Volatility is the trigger."</p>
-              <p className="text-xs text-zinc-400 leading-relaxed">Even under "Accumulate" status, the terminal often waits for a specific velocity signature (+3% to +8% price move) before firing order execution to avoid "buying the chop."</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">BullsEye requires a mathematical majority. No asset is traded unless at least two agents align on a positive outlook (e.g. Chase + Confirm). However, a single <span className="text-rose-500 font-bold">VETO</span> from The Bear can freeze execution even if 2/3 alignment is met.</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">Under "Accumulate" status, the terminal waits for a specific velocity signature (+3% to +8% price move) before firing order execution to avoid "buying the chop."</p>
             </div>
           </div>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-6">
-          <div className="space-y-6">
-            <h3 className="text-lg font-bold italic uppercase flex items-center gap-3"><Zap className="w-5 h-5 text-amber-500" /> Safety Parameters</h3>
-            <ul className="space-y-4 m-0 p-0 list-none">
-              <li className="flex gap-4 items-start">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                <div className="text-xs">
-                  <span className="text-white font-bold block mb-1 uppercase tracking-tighter italic">Liquidity Gate</span>
-                  <p className="text-zinc-500 m-0">Assets with under $30k in pool depth are automatically VETOED to prevent high-slippage trap entries.</p>
+        <section className="space-y-12">
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase border-b border-white/10 pb-4">Internal Monitoring & Execution</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3"><Activity className="w-5 h-5 text-blue-500" /><h3 className="text-sm font-black uppercase tracking-widest italic text-white leading-none">The Sentinel Engine</h3></div>
+                    <p className="text-xs text-zinc-400 leading-relaxed">Our Sentinel engine performs a deep-trace sync every 15-60 minutes. It doesn't just check price; it reconciles the entire decentralized state (Liquidity Pools, Treasury Balance, and Trade Logs) to ensure the terminal is always "Trade-Ready."</p>
                 </div>
-              </li>
-              <li className="flex gap-4 items-start">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                <div className="text-xs">
-                  <span className="text-white font-bold block mb-1 uppercase tracking-tighter italic">Automatic Hard Stops</span>
-                  <p className="text-zinc-500 m-0">Positions that fall 5% below entry are liquidated with FINAL priority to ensure capital survival.</p>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3"><Lock className="w-5 h-5 text-rose-500" /><h3 className="text-sm font-black uppercase tracking-widest italic text-white leading-none">Security Liquidation</h3></div>
+                    <p className="text-xs text-zinc-400 leading-relaxed">To survive black swan events, BullsEye employs an "Absolute Zero" stop-loss policy. If an active position hits a -5% drawdown from entry, the Safety Liquidation protocol triggers a full-market sell within seconds, regardless of Council sentiment.</p>
                 </div>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-6">
-            <h3 className="text-lg font-bold italic uppercase flex items-center gap-3"><Scale className="w-5 h-5 text-blue-400" /> Asset Tiers</h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                <div className="flex justify-between items-center mb-1"><span className="text-[9px] font-black text-white uppercase italic">Anchor</span><span className="text-[8px] text-zinc-500 uppercase font-black">BTC / ETH</span></div>
-                <p className="text-[10px] text-zinc-500 m-0">Low volatility, high liquidity. Scaled exits at +5% and +12%.</p>
-              </div>
-              <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                <div className="flex justify-between items-center mb-1"><span className="text-[9px] font-black text-white uppercase italic">High Alpha</span><span className="text-[8px] text-zinc-500 uppercase font-black">MEMECOINS / DEGEN</span></div>
-                <p className="text-[10px] text-zinc-500 m-0">Extreme volatility. Aggressive profit ladders (+20% and +50%) with tight monitoring.</p>
-              </div>
             </div>
-          </div>
+
+            <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden">
+                <div className="p-8 border-b border-white/5 bg-white/[0.01]">
+                    <h3 className="text-lg font-bold italic uppercase flex items-center gap-3 text-white"><Scale className="w-5 h-5 text-blue-400" /> Strategic Scaling (Profit Ladders)</h3>
+                </div>
+                <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Anchor Tier (BTC/ETH)</h4>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
+                                <span className="text-zinc-500 font-bold">Rung 1 (33% exit)</span>
+                                <span className="text-emerald-400 font-mono font-bold">+5%</span>
+                            </div>
+                            <div className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
+                                <span className="text-zinc-500 font-bold">Rung 2 (33% exit)</span>
+                                <span className="text-emerald-400 font-mono font-bold">+12%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">High Alpha Tier (Degen/Small Caps)</h4>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
+                                <span className="text-zinc-500 font-bold">Rung 1 (33% exit)</span>
+                                <span className="text-emerald-400 font-mono font-bold">+20%</span>
+                            </div>
+                            <div className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
+                                <span className="text-zinc-500 font-bold">Rung 2 (33% exit)</span>
+                                <span className="text-emerald-400 font-mono font-bold">+50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <footer className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
