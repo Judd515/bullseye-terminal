@@ -25,22 +25,23 @@ export default function Dashboard() {
         
         const fetchToken = async (t) => {
             try {
-                let price = 0, change = 0, liq = 0, h1_vol = 0;
+                let price = 0, change = 0, h1_change = 0, liq = 0, h1_vol = 0;
                 if (t.id === 'XMR') {
                     const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd&include_24hr_change=true`);
                     const json = await res.json();
-                    price = json.monero.usd; change = json.monero.usd_24h_change; liq = 50000000;
+                    price = json.monero.usd; change = json.monero.usd_24h_change; h1_change = 0; liq = 50000000;
                 } else if (t.addr) {
                     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
                     const json = await res.json();
                     const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
                     price = p ? parseFloat(p.priceUsd) : 0;
                     change = p ? p.priceChange.h24 : 0;
+                    h1_change = p ? p.priceChange.h1 : 0;
                     liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
                     h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
                 }
-                return { ...t, price, change: parseFloat((change || 0).toFixed(2)), liq, h1_vol, isFC: ['DEGEN', 'CLANKER', 'BANKR'].includes(t.id) };
-            } catch { return { ...t, price: 0, change: 0, liq: 0, h1_vol: 0 } ; }
+                return { ...t, price, change: parseFloat((change || 0).toFixed(2)), h1_change: parseFloat((h1_change || 0).toFixed(2)), liq, h1_vol, isFC: ['DEGEN', 'CLANKER', 'BANKR'].includes(t.id) };
+            } catch { return { ...t, price: 0, change: 0, h1_change: 0, liq: 0, h1_vol: 0 } ; }
         };
 
         const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
@@ -205,7 +206,10 @@ export default function Dashboard() {
                         <tr key={s.id} onClick={() => setSelectedToken(s)} className="group cursor-pointer">
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-l border-white/5 rounded-l-2xl flex items-center gap-3 transition-all group-hover:bg-white/[0.08]"><div className="p-2 border border-white/5 rounded-lg bg-zinc-900 group-hover:text-blue-400 transition-colors"><Coins className="w-3.5 h-3.5" /></div><div className="text-left"><span className="font-black text-md block transition-colors group-hover:text-blue-400 leading-none">{s.id}</span><span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest leading-none">{s.tier}</span></div></td>
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-mono font-bold text-zinc-300 tabular-nums text-sm">${s.price > 1 ? s.price.toLocaleString(undefined, {minimumFractionDigits:2}) : s.price.toFixed(6)}</td>
-                            <td className={`px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-black italic text-sm group-hover:bg-white/5 ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</td>
+                            <td className={`px-4 py-4 bg-white/[0.03] border-y border-white/5 text-right font-black italic text-sm group-hover:bg-white/5 ${s.change > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>
+                                <div className="leading-none">{s.change > 0 ? '↑' : '↓'} {Math.abs(s.change)}%</div>
+                                <div className={`text-[8px] mt-1 font-bold ${s.h1_change > 0 ? 'text-emerald-500' : 'text-rose-400'}`}>{s.h1_change > 0 ? '+' : ''}{s.h1_change}% (1h)</div>
+                            </td>
                             <td className="px-4 py-4 bg-white/[0.03] border-y border-r border-white/5 rounded-r-2xl text-right transition-all group-hover:bg-white/[0.08]">
                                 <div className={`text-[9px] font-black uppercase italic tracking-wider ${s.consensus.color}`}>{s.consensus.label}</div>
                                 <div className="flex justify-end gap-1.5 mt-1">{s.consensus.council.map((c, idx) => (
