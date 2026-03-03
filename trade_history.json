@@ -14,5 +14,14 @@
     "price": 0.000549,
     "amount_usd": 176.4735,
     "logic": "Consensus Reached [BUY]. Mooner confirms breakout move. Deployment of 30% available capital."
+  },
+  {
+    "timestamp": "2026-03-03 08:57:34 PST",
+    "symbol": "BANKR",
+    "side": "SELL",
+    "price": 0.0005189,
+    "amount_usd": 400.1393745207074,
+    "qty": 771130.0337650942,
+    "logic": "Profit Ladder: SAFETY_LIQUIDATION (FINAL) triggered at -5.48% PnL."
   }
 ]
