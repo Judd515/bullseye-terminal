@@ -51,27 +51,63 @@ export default function Dashboard() {
         const historyArray = Array.isArray(rawHistory) ? rawHistory : (rawHistory && typeof rawHistory === 'object' ? Object.values(rawHistory) : []);
 
         const getCouncilData = (token) => {
-            const ch = token.change; const l = token.liq || 50000;
+            const ch = token.change; 
+            const l = token.liq || 50000;
+            const h1 = token.h1_vol || 0;
             const council = [];
-            if (l < 30000) council.push({ agent: 'The Bear', vote: 'REJECT', logic: 'Liquidity thin.' });
-            else if (ch > 20) council.push({ agent: 'The Bear', vote: 'REJECT', logic: 'Vertical overextension.' });
-            else council.push({ agent: 'The Bear', vote: 'NEUTRAL', logic: 'Stable risk.' });
-            if (ch > 5) council.push({ agent: 'The Mooner', vote: 'BUY', logic: 'Breakout detectable.' });
-            else council.push({ agent: 'The Mooner', vote: 'NEUTRAL', logic: 'Low velocity.' });
-            if (ch > 3) council.push({ agent: 'The Quant', vote: 'BUY', logic: 'Positive drift.' });
-            else if (ch < -5) council.push({ agent: 'The Quant', vote: 'SELL', logic: 'Distribution.' });
-            else council.push({ agent: 'The Quant', vote: 'HOLD', logic: 'Drift-neutral.' });
+
+            // The Bear: Approve / Caution / Veto
+            if (l < 30000) {
+                council.push({ agent: 'The Bear', vote: 'VETO', logic: `Liquidity threshold failure ($${(l/1000).toFixed(0)}k < $30k).` });
+            } else if (ch > 20) {
+                council.push({ agent: 'The Bear', vote: 'CAUTION', logic: 'Vertical overextension; mean reversion risk high.' });
+            } else {
+                council.push({ agent: 'The Bear', vote: 'APPROVE', logic: 'Risk/Reward ratio within safety parameters.' });
+            }
+
+            // The Mooner: Chase / Wait
+            if (ch > 8 && h1 > (l * 0.1)) {
+                council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'High velocity + volume spike detected.' });
+            } else if (ch > 3) {
+                council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'Positive momentum building.' });
+            } else {
+                council.push({ agent: 'The Mooner', vote: 'WAIT', logic: 'Insufficient volatility for moon mission.' });
+            }
+
+            // The Quant: Confirm / No Edge
+            if (Math.abs(ch) > 2 && h1 > 5000) {
+                council.push({ agent: 'The Quant', vote: 'CONFIRM', logic: 'Statistical drift confirms active trend.' });
+            } else {
+                council.push({ agent: 'The Quant', vote: 'NO EDGE', logic: 'Signal-to-noise ratio too low for conviction.' });
+            }
+
             return council;
         };
 
         const getConsensus = (token) => {
             const council = getCouncilData(token);
-            const buys = council.filter(v => v.vote === 'BUY').length;
-            const rejects = council.filter(v => v.vote === 'REJECT').length;
-            let label = 'MONITOR'; let color = 'text-zinc-500'; let desc = "Consolidation.";
-            if (buys === 3) { label = 'STRONG BUY'; color = 'text-emerald-500'; desc = "Unanimous breakout conviction."; }
-            else if (buys === 2) { label = 'ACCUMULATE'; color = 'text-emerald-400'; desc = "Council momentum confirmed."; }
-            else if (rejects >= 1) { label = 'AVOID'; color = 'text-rose-600'; desc = "Bear VETO active."; }
+            const chase = council.filter(v => v.vote === 'CHASE').length;
+            const vetos = council.filter(v => v.vote === 'VETO').length;
+            const confirms = council.filter(v => v.vote === 'CONFIRM').length;
+
+            let label = 'MONITOR'; 
+            let color = 'text-zinc-500'; 
+            let desc = "Awaiting cross-agent alignment.";
+
+            if (vetos >= 1) {
+                label = 'VETOED'; 
+                color = 'text-rose-600'; 
+                desc = "Bear risk-abort active.";
+            } else if (chase >= 1 && confirms >= 1) {
+                label = 'STRONG BUY'; 
+                color = 'text-emerald-500'; 
+                desc = "Momentum and Quant alignment confirmed.";
+            } else if (chase >= 1 || confirms >= 1) {
+                label = 'ACCUMULATE'; 
+                color = 'text-emerald-400'; 
+                desc = "Partial alignment detected.";
+            }
+
             return { label, color, desc, council };
         };
 
@@ -241,7 +277,12 @@ export default function Dashboard() {
                                 </div>
                                 <div className="mt-6 pt-4 border-t border-white/5 space-y-3">
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1 leading-none">Max Slip</div><div className="text-[10px] text-zinc-300 font-mono">0.50%</div></div>
+                                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="text-[8px] text-zinc-600 font-black uppercase mb-1 leading-none">Est. Impact</div>
+                                            <div className="text-[10px] text-zinc-300 font-mono">
+                                                {selectedToken.liq > 0 ? ((1000 / (selectedToken.liq / 2)) * 100).toFixed(3) : '0.000'}%
+                                            </div>
+                                        </div>
                                         <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl"><div className="text-[8px] text-zinc-600 font-black uppercase mb-1 leading-none">Entry</div><div className="text-[10px] text-zinc-300 font-mono">{selectedToken.consensus.label.includes('STRONG') ? '25%' : '15%'}</div></div>
                                     </div>
                                 </div>
