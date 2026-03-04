@@ -12,130 +12,130 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('surveillance');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokens = [
-            { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'], tier: 'Anchor' },
-            { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'], tier: 'Anchor' },
-            { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD'], tier: 'Mid Tier' },
-            { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD'], tier: 'Mid Tier' },
-            { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['COINBASE:CLANKERUSD'], tier: 'High Alpha' },
-            { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['COINBASE:BNKRUSD'], tier: 'High Alpha' }
-        ];
-        
-        const fetchToken = async (t) => {
+        const fetchData = async () => {
             try {
-                let price = 0, change = 0, h1_change = 0, liq = 0, h1_vol = 0;
-                if (t.id === 'XMR') {
-                    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd&include_24hr_change=true`);
-                    const json = await res.json();
-                    price = json.monero.usd; change = json.monero.usd_24h_change; h1_change = 0; liq = 50000000;
-                } else if (t.addr) {
-                    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
-                    const json = await res.json();
-                    const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
-                    price = p ? parseFloat(p.priceUsd) : 0;
-                    change = p ? p.priceChange.h24 : 0;
-                    h1_change = p ? p.priceChange.h1 : 0;
-                    liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
-                    h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
-                }
-                return { ...t, price, change: parseFloat((change || 0).toFixed(2)), h1_change: parseFloat((h1_change || 0).toFixed(2)), liq, h1_vol, isFC: ['DEGEN', 'CLANKER', 'BANKR'].includes(t.id) };
-            } catch { return { ...t, price: 0, change: 0, h1_change: 0, liq: 0, h1_vol: 0 } ; }
+                const tokens = [
+                    { id: 'BTC', addr: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', chain: 'ethereum', symbols: ['BINANCE:BTCUSDT', 'COINBASE:BTCUSD'], tier: 'Anchor' },
+                    { id: 'ETH', addr: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', chain: 'ethereum', symbols: ['BINANCE:ETHUSDT', 'COINBASE:ETHUSD'], tier: 'Anchor' },
+                    { id: 'XMR', cgId: 'monero', symbols: ['KRAKEN:XMRUSD'], tier: 'Mid Tier' },
+                    { id: 'DEGEN', addr: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', chain: 'base', symbols: ['COINBASE:DEGENUSD'], tier: 'Mid Tier' },
+                    { id: 'CLANKER', addr: '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb', chain: 'base', symbols: ['COINBASE:CLANKERUSD'], tier: 'High Alpha' },
+                    { id: 'BANKR', addr: '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', chain: 'base', symbols: ['COINBASE:BNKRUSD'], tier: 'High Alpha' }
+                ];
+                
+                const fetchToken = async (t) => {
+                    try {
+                        let price = 0, change = 0, h1_change = 0, liq = 0, h1_vol = 0;
+                        if (t.id === 'XMR') {
+                            const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd&include_24hr_change=true`);
+                            const json = await res.json();
+                            price = json.monero.usd; change = json.monero.usd_24h_change; h1_change = 0; liq = 50000000;
+                        } else if (t.addr) {
+                            const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${t.addr}`);
+                            const json = await res.json();
+                            const p = json.pairs?.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+                            price = p ? parseFloat(p.priceUsd) : 0;
+                            change = p ? p.priceChange.h24 : 0;
+                            h1_change = p ? p.priceChange.h1 : 0;
+                            liq = p ? parseFloat(p.liquidity?.usd || 0) : 0;
+                            h1_vol = p ? parseFloat(p.volume?.h1 || 0) : 0;
+                        }
+                        return { ...t, price, change: parseFloat((change || 0).toFixed(2)), h1_change: parseFloat((h1_change || 0).toFixed(2)), liq, h1_vol, isFC: ['DEGEN', 'CLANKER', 'BANKR'].includes(t.id) };
+                    } catch { return { ...t, price: 0, change: 0, h1_change: 0, liq: 0, h1_vol: 0 } ; }
+                };
+
+                const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
+                const appDataRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/paper_wallet.json?cb=' + Date.now());
+                const wallet = await appDataRes.json();
+                const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
+                const rawHistory = await historyRes.json();
+                const historyArray = Array.isArray(rawHistory) ? rawHistory : (rawHistory && typeof rawHistory === 'object' ? Object.values(rawHistory) : []);
+
+                const getCouncilData = (token) => {
+                    const ch = token.change; 
+                    const l = token.liq || 50000;
+                    const h1 = token.h1_vol || 0;
+                    const council = [];
+
+                    // The Bear: Approve / Caution / Veto
+                    if (l < 30000) {
+                        council.push({ agent: 'The Bear', vote: 'VETO', logic: `Liquidity threshold failure ($${(l/1000).toFixed(0)}k < $30k).` });
+                    } else if (ch > 20) {
+                        council.push({ agent: 'The Bear', vote: 'CAUTION', logic: 'Vertical overextension; mean reversion risk high.' });
+                    } else {
+                        council.push({ agent: 'The Bear', vote: 'APPROVE', logic: 'Risk/Reward ratio within safety parameters.' });
+                    }
+
+                    // The Mooner: Chase / Wait
+                    if (ch > 8 && h1 > (l * 0.1)) {
+                        council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'High velocity + volume spike detected.' });
+                    } else if (ch > 3) {
+                        council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'Positive momentum building.' });
+                    } else {
+                        council.push({ agent: 'The Mooner', vote: 'WAIT', logic: 'Insufficient volatility for moon mission.' });
+                    }
+
+                    // The Quant: Confirm / No Edge
+                    if (Math.abs(ch) > 2 && h1 > 5000) {
+                        council.push({ agent: 'The Quant', vote: 'CONFIRM', logic: 'Statistical drift confirms active trend.' });
+                    } else {
+                        council.push({ agent: 'The Quant', vote: 'NO EDGE', logic: 'Signal-to-noise ratio too low for conviction.' });
+                    }
+
+                    return council;
+                };
+
+                const getConsensus = (token) => {
+                    const council = getCouncilData(token);
+                    const chase = council.filter(v => v.vote === 'CHASE').length;
+                    const vetos = council.filter(v => v.vote === 'VETO').length;
+                    const confirms = council.filter(v => v.vote === 'CONFIRM').length;
+                    const approves = council.filter(v => v.vote === 'APPROVE').length;
+
+                    let label = 'MONITOR'; 
+                    let color = 'text-zinc-500'; 
+                    let desc = "Awaiting cross-agent alignment.";
+
+                    const positiveVotes = chase + confirms + approves;
+
+                    if (vetos >= 1) {
+                        label = 'VETOED'; 
+                        color = 'text-rose-600'; 
+                        desc = "Bear risk-abort active. Entry blocked.";
+                    } else if (positiveVotes >= 2) {
+                        label = 'ACCUMULATE'; 
+                        color = 'text-emerald-400'; 
+                        desc = "Consensus reached (2/3). Awaiting breakout volatility trigger.";
+                    }
+
+                    return { label, color, desc, council };
+                };
+
+                const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
+                    const token = resultStats.find(s => s.id === id);
+                    const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
+                    const relevantTrades = historyArray.filter(t => t.symbol === id);
+                    let ePrice = 0;
+                    if (relevantTrades.length > 0) {
+                        const lastSellIdx = [...relevantTrades].reverse().findIndex(t => t.side === 'SELL');
+                        const lastPosTrades = lastSellIdx === -1 ? relevantTrades : relevantTrades.slice(relevantTrades.length - lastSellIdx);
+                        const lastBuy = lastPosTrades.find(t => t.side === 'BUY');
+                        if (lastBuy) ePrice = lastBuy.price;
+                    }
+                    const cPrice = token?.price || 0;
+                    const pVal = ePrice > 0 ? (parseFloat(value) - (parseFloat(qty) * ePrice)).toFixed(2) : "0.00";
+                    const pPct = ePrice > 0 ? ((cPrice - ePrice) / ePrice * 100).toFixed(2) : "0.00";
+                    return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal: pVal, profitPct: pPct };
+                });
+
+                const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
+                setData({ 
+                    total: totalEquity, pnl: (((totalEquity - 5000) / 5000) * 100).toFixed(2), balance_usd: wallet.balance_usd,
+                    holdings: holdings, history: historyArray, 
+                    stats: resultStats.map(s => ({ ...s, consensus: getConsensus(s) })) 
+                });
+            } catch (e) { console.error(e); }
         };
-
-        const resultStats = await Promise.all(tokens.map(t => fetchToken(t)));
-        const appDataRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/paper_wallet.json?cb=' + Date.now());
-        const wallet = await appDataRes.json();
-        const historyRes = await fetch('https://raw.githubusercontent.com/Judd515/bullseye-terminal/main/trade_history.json?cb=' + Date.now());
-        const rawHistory = await historyRes.json();
-        const historyArray = Array.isArray(rawHistory) ? rawHistory : (rawHistory && typeof rawHistory === 'object' ? Object.values(rawHistory) : []);
-
-        const getCouncilData = (token) => {
-            const ch = token.change; 
-            const l = token.liq || 50000;
-            const h1 = token.h1_vol || 0;
-            const council = [];
-
-            // The Bear: Approve / Caution / Veto
-            if (l < 30000) {
-                council.push({ agent: 'The Bear', vote: 'VETO', logic: `Liquidity threshold failure ($${(l/1000).toFixed(0)}k < $30k).` });
-            } else if (ch > 20) {
-                council.push({ agent: 'The Bear', vote: 'CAUTION', logic: 'Vertical overextension; mean reversion risk high.' });
-            } else {
-                council.push({ agent: 'The Bear', vote: 'APPROVE', logic: 'Risk/Reward ratio within safety parameters.' });
-            }
-
-            // The Mooner: Chase / Wait
-            if (ch > 8 && h1 > (l * 0.1)) {
-                council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'High velocity + volume spike detected.' });
-            } else if (ch > 3) {
-                council.push({ agent: 'The Mooner', vote: 'CHASE', logic: 'Positive momentum building.' });
-            } else {
-                council.push({ agent: 'The Mooner', vote: 'WAIT', logic: 'Insufficient volatility for moon mission.' });
-            }
-
-            // The Quant: Confirm / No Edge
-            if (Math.abs(ch) > 2 && h1 > 5000) {
-                council.push({ agent: 'The Quant', vote: 'CONFIRM', logic: 'Statistical drift confirms active trend.' });
-            } else {
-                council.push({ agent: 'The Quant', vote: 'NO EDGE', logic: 'Signal-to-noise ratio too low for conviction.' });
-            }
-
-            return council;
-        };
-
-        const getConsensus = (token) => {
-            const council = getCouncilData(token);
-            const chase = council.filter(v => v.vote === 'CHASE').length;
-            const vetos = council.filter(v => v.vote === 'VETO').length;
-            const confirms = council.filter(v => v.vote === 'CONFIRM').length;
-            const approves = council.filter(v => v.vote === 'APPROVE').length;
-
-            let label = 'MONITOR'; 
-            let color = 'text-zinc-500'; 
-            let desc = "Awaiting cross-agent alignment.";
-
-            const positiveVotes = chase + confirms + approves;
-
-            if (vetos >= 1) {
-                label = 'VETOED'; 
-                color = 'text-rose-600'; 
-                desc = "Bear risk-abort active. Entry blocked.";
-            } else if (positiveVotes >= 2) {
-                label = 'ACCUMULATE'; 
-                color = 'text-emerald-400'; 
-                desc = "Consensus reached (2/3). Awaiting breakout volatility trigger.";
-            }
-
-            return { label, color, desc, council };
-        };
-
-        const holdings = Object.entries(wallet.holdings || {}).map(([id, qty]) => {
-            const token = resultStats.find(s => s.id === id);
-            const value = (parseFloat(qty) * (token?.price || 0)).toFixed(2);
-            const relevantTrades = historyArray.filter(t => t.symbol === id);
-            let ePrice = 0;
-            if (relevantTrades.length > 0) {
-                const lastSellIdx = [...relevantTrades].reverse().findIndex(t => t.side === 'SELL');
-                const lastPosTrades = lastSellIdx === -1 ? relevantTrades : relevantTrades.slice(relevantTrades.length - lastSellIdx);
-                const lastBuy = lastPosTrades.find(t => t.side === 'BUY');
-                if (lastBuy) ePrice = lastBuy.price;
-            }
-            const cPrice = token?.price || 0;
-            const pVal = ePrice > 0 ? (parseFloat(value) - (parseFloat(qty) * ePrice)).toFixed(2) : "0.00";
-            const pPct = ePrice > 0 ? ((cPrice - ePrice) / ePrice * 100).toFixed(2) : "0.00";
-            return { id, qty: parseFloat(qty), value: parseFloat(value), profitVal: pVal, profitPct: pPct };
-        });
-
-        const totalEquity = wallet.balance_usd + holdings.reduce((acc, h) => acc + parseFloat(h.value), 0);
-        setData({ 
-          total: totalEquity, pnl: (((totalEquity - 5000) / 5000) * 100).toFixed(2), balance_usd: wallet.balance_usd,
-          holdings: holdings, history: historyArray, 
-          stats: resultStats.map(s => ({ ...s, consensus: getConsensus(s) })) 
-        });
-      } catch (e) { console.error(e); }
-    };
     fetchData();
     const interval = setInterval(fetchData, 15000);
     return () => clearInterval(interval);
