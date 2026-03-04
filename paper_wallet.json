@@ -1,9 +1,18 @@
 {
-  "balance_usd": 761.6608745207075,
+  "balance_usd": 561.660874520707,
   "holdings": {
-    "BTC": 0.0618276884016834
+    "BTC": 0.0618276884016834,
+    "DEGEN": 39447.73175542406
   },
   "scaled_exits": {
     "BTC": 0
-  }
+  },
+  "pending_orders": [
+    {
+      "symbol": "BTC",
+      "price": 69150.0,
+      "amount_usd": 200.0,
+      "type": "LIMIT_BUY"
+    }
+  ]
 }
