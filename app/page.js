@@ -227,15 +227,28 @@ export default function Dashboard() {
                         const lp = s ? s.price : 0; const ep = parseFloat(t.price) || 1;
                         const q = t.qty || (parseFloat(t.amount_usd) / ep);
                         const pct = (((lp - ep) / ep) * 100).toFixed(1); const usd = (q * (lp - ep)).toFixed(2);
+                        const isLimit = t.side === 'LIMIT_BUY';
                         return (
                             <tr key={idx} className="hover:bg-white/[0.02]">
                                 <td className="px-4 py-3 font-mono text-[8px] text-zinc-500 whitespace-nowrap">{t.timestamp ? t.timestamp.split(' ')[1] : 'N/A'}</td>
                                 <td className="px-4 py-3 font-black italic text-xs text-white uppercase">{t.symbol || t.id || 'N/A'}</td>
-                                <td className="text-center font-black"><span className={t.side === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}>{t.side === 'BUY' ? 'B' : 'S'}</span></td>
+                                <td className="text-center font-black">
+                                  <span className={t.side === 'BUY' ? 'text-emerald-400' : (isLimit ? 'text-amber-400' : 'text-rose-400')}>
+                                    {t.side === 'BUY' ? 'B' : (isLimit ? 'L' : 'S')}
+                                  </span>
+                                </td>
                                 <td className="px-4 py-3 font-mono text-[9px] text-zinc-300 text-right">{q > 9999 ? (q/1000).toFixed(0)+'k' : q.toFixed(1)}</td>
                                 <td className="px-4 py-3 font-mono text-right text-zinc-400 text-[9px]">${ep < 1 ? ep.toFixed(4) : ep.toLocaleString()}</td>
                                 <td className="px-4 py-3 font-mono text-right text-blue-500 text-[9px] font-bold">${lp < 1 ? lp.toFixed(4) : lp.toLocaleString()}</td>
-                                <td className="px-4 py-3 font-mono text-right">{t.side === 'BUY' ? (<div className="flex flex-col items-end leading-none"><span className={parseFloat(pct) >= 0 ? 'text-emerald-400' : 'text-rose-500'}>{parseFloat(pct) >= 0 ? '+' : ''}{pct}%</span><span className="text-[7px] text-zinc-600 font-bold mt-0.5">${usd}</span></div>) : <span className="text-[8px] text-zinc-700 uppercase font-bold">Settled</span>}</td>
+                                <td className="px-4 py-3 font-mono text-right">
+                                  {t.side === 'BUY' ? (
+                                    <div className="flex flex-col items-end leading-none"><span className={parseFloat(pct) >= 0 ? 'text-emerald-400' : 'text-rose-500'}>{parseFloat(pct) >= 0 ? '+' : ''}{pct}%</span><span className="text-[7px] text-zinc-600 font-bold mt-0.5">${usd}</span></div>
+                                  ) : isLimit ? (
+                                    <span className="text-[8px] text-amber-500/50 uppercase font-black animate-pulse">Pending</span>
+                                  ) : (
+                                    <span className="text-[8px] text-zinc-700 uppercase font-bold">Settled</span>
+                                  )}
+                                </td>
                             </tr>
                         );
                     })}</tbody>
