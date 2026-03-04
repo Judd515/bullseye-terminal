@@ -228,7 +228,8 @@ export default function Dashboard() {
                         const q = t.qty || (parseFloat(t.amount_usd) / ep);
                         const pct = (((lp - ep) / ep) * 100).toFixed(1); const usd = (q * (lp - ep)).toFixed(2);
                         const isLimit = t.side === 'LIMIT_BUY';
-                        const isSettled = t.side === 'BUY' && historyArray.some(tt => tt.symbol === t.symbol && tt.timestamp > t.timestamp && tt.side === 'SELL');
+                        // Check if this specific buy has been settled by a later sell
+                        const isSettled = t.side === 'BUY' && data.history.some(tt => tt.symbol === t.symbol && tt.timestamp > t.timestamp && tt.side === 'SELL');
                         return (
                             <tr key={idx} className="hover:bg-white/[0.02]">
                                 <td className="px-4 py-3 font-mono text-[8px] text-zinc-500 whitespace-nowrap">{t.timestamp ? t.timestamp.split(' ')[1] : 'N/A'}</td>
