@@ -132,6 +132,7 @@ export default function Dashboard() {
                 setData({ 
                     total: totalEquity, pnl: (((totalEquity - 5000) / 5000) * 100).toFixed(2), balance_usd: wallet.balance_usd,
                     holdings: holdings, history: historyArray, 
+                    decisionNote: "Council in ACCUMULATION mode. Maintaining $69.1k BTC limit order. Degen-Base momentum holding steady.",
                     stats: resultStats.map(s => ({ ...s, consensus: getConsensus(s) })) 
                 });
             } catch (e) { console.error(e); }
@@ -180,7 +181,7 @@ export default function Dashboard() {
             <div className="lg:col-span-4 space-y-4">
                 <div className="glass rounded-[2rem] p-6 neo-gradient border-blue-500/20 flex flex-col justify-between min-h-[220px]">
                     <div className="text-left"><h2 className="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase italic border-b border-blue-500/20 pb-2 mb-4">Decision Node</h2>
-                    <p className="text-lg text-white font-bold leading-snug italic tracking-tight m-0 opacity-90 text-left">"Applying dynamic asset tiers. Monitoring high-alpha and anchor liquidity pools."</p></div>
+                    <p className="text-lg text-white font-bold leading-snug italic tracking-tight m-0 opacity-90 text-left">"{data.decisionNote || 'Applying dynamic asset tiers. Monitoring high-alpha and anchor liquidity pools.'}"</p></div>
                 </div>
                 <div className="glass rounded-[2rem] p-6 border-emerald-500/20 bg-emerald-500/[0.02]">
                     <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2 text-left"><h2 className="text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase italic">Paper holdings</h2><div className="text-[10px] font-black text-zinc-600 tabular-nums">${data.balance_usd.toLocaleString()} Cash</div></div>
