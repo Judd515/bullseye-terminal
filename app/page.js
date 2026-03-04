@@ -228,6 +228,7 @@ export default function Dashboard() {
                         const q = t.qty || (parseFloat(t.amount_usd) / ep);
                         const pct = (((lp - ep) / ep) * 100).toFixed(1); const usd = (q * (lp - ep)).toFixed(2);
                         const isLimit = t.side === 'LIMIT_BUY';
+                        const isSettled = t.side === 'BUY' && historyArray.some(tt => tt.symbol === t.symbol && tt.timestamp > t.timestamp && tt.side === 'SELL');
                         return (
                             <tr key={idx} className="hover:bg-white/[0.02]">
                                 <td className="px-4 py-3 font-mono text-[8px] text-zinc-500 whitespace-nowrap">{t.timestamp ? t.timestamp.split(' ')[1] : 'N/A'}</td>
@@ -241,7 +242,9 @@ export default function Dashboard() {
                                 <td className="px-4 py-3 font-mono text-right text-zinc-400 text-[9px]">${ep < 1 ? ep.toFixed(4) : ep.toLocaleString()}</td>
                                 <td className="px-4 py-3 font-mono text-right text-blue-500 text-[9px] font-bold">${lp < 1 ? lp.toFixed(4) : lp.toLocaleString()}</td>
                                 <td className="px-4 py-3 font-mono text-right">
-                                  {t.side === 'BUY' ? (
+                                  {isSettled ? (
+                                    <span className="text-[8px] text-zinc-700 uppercase font-black">Holdings Settled</span>
+                                  ) : t.side === 'BUY' ? (
                                     <div className="flex flex-col items-end leading-none"><span className={parseFloat(pct) >= 0 ? 'text-emerald-400' : 'text-rose-500'}>{parseFloat(pct) >= 0 ? '+' : ''}{pct}%</span><span className="text-[7px] text-zinc-600 font-bold mt-0.5">${usd}</span></div>
                                   ) : isLimit ? (
                                     <span className="text-[8px] text-amber-500/50 uppercase font-black animate-pulse">Pending</span>
